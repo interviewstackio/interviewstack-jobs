@@ -1,0 +1,15 @@
+{
+  "name": "interviewstack-jobs",
+  "owner": {
+    "name": "InterviewStack.io",
+    "email": "hello@interviewstack.io"
+  },
+  "description": "Official InterviewStack.io job-search tools for AI coding assistants — search live, curated jobs and draft tailored applications, right from your terminal.",
+  "plugins": [
+    {
+      "name": "interviewstack-jobs",
+      "source": "./plugins/interviewstack-jobs",
+      "description": "Connects the InterviewStack.io job-search MCP server and installs skills to find matching roles, polish your resume, and run a daily job digest."
+    }
+  ]
+}

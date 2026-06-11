@@ -1,0 +1,22 @@
+{
+  "name": "interviewstack-jobs",
+  "description": "Search live, curated jobs from the InterviewStack.io job board and draft tailored applications. Bundles the job-search MCP server plus skills for application tailoring, resume polishing, and a daily job digest.",
+  "version": "0.1.0",
+  "author": {
+    "name": "InterviewStack.io",
+    "email": "hello@interviewstack.io"
+  },
+  "homepage": "https://interviewstack.io/job-board",
+  "repository": "https://github.com/interviewstackio/interviewstack-jobs",
+  "license": "MIT",
+  "keywords": ["jobs", "job-search", "resume", "interview", "career", "interviewstack"],
+  "mcpServers": {
+    "interviewstack-jobs": {
+      "type": "http",
+      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${INTERVIEWSTACK_MCP_KEY}"
+      }
+    }
+  }
+}
