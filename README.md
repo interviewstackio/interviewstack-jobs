@@ -1,25 +1,24 @@
 # InterviewStack.io Job Search — for your AI assistant
 
 Search **live, curated jobs** from the [InterviewStack.io job board](https://interviewstack.io/job-board)
-straight from Claude Code (or any MCP client) — and let your AI find roles that
-genuinely fit you, polish your resume against real postings, and draft tailored
-applications.
+from **any MCP-compatible AI assistant** — Claude Code, Cursor, VS Code + Copilot,
+OpenAI Codex, Windsurf, and more. Let your AI find roles that genuinely fit you,
+polish your resume against real postings, and draft tailored applications.
 
-This repo is a **Claude Code plugin marketplace**. Installing the plugin connects
-the job-search MCP server **and** the skills that drive it, in one step.
+Under the hood this is **one open [MCP](https://modelcontextprotocol.io) server** —
+the same endpoint and tools for every client. This repo packages it for easy setup
+plus the workflow guidance that makes it sing: a **Claude Code plugin** (one-click,
+bundles the skills) and a portable **[`AGENTS.md`](./AGENTS.md)** that Codex, Cursor,
+Copilot, Windsurf and ~20 other tools read natively.
 
 > Jobs are sourced from **InterviewStack.io** (the `.io` job board — not a `.com`).
 
 ---
 
-## Setup (2 minutes)
-
-### Step 1 — Get your API key
+## Step 1 — Get your API key (all tools)
 
 Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**
 and click **Generate**. Copy the key (`isk_…`) — it's shown once.
-
-Then export it so the plugin can use it:
 
 ```bash
 export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"
@@ -27,19 +26,137 @@ export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"
 
 > Put this in your shell profile (`~/.zshrc`, `~/.bashrc`) so it persists.
 > **Never commit your key.** It's read-only and rate-limited, but treat it like a password.
+>
+> GUI-launched editors (Cursor, VS Code) don't always inherit shell env vars. If
+> `${env:…}` doesn't resolve, either launch the editor from a terminal, use the
+> tool's secret-input mechanism (shown below), or paste the key directly into the
+> config (the file stays on your machine).
 
-### Step 2 — Install the plugin
+## Step 2 — Connect your tool
 
-In Claude Code:
+The MCP endpoint is the same everywhere:
+`https://mcp-job-search.interviewstack-io.workers.dev/mcp` with header
+`Authorization: Bearer <your key>`.
+
+<details open>
+<summary><b>Claude Code</b> — one-click (bundles the skills)</summary>
 
 ```
 /plugin marketplace add interviewstackio/interviewstack-jobs
 /plugin install interviewstack-jobs@interviewstack-jobs
 ```
 
-That's it. The `interviewstack-jobs` MCP server connects automatically and the
-skills become available. Verify with `/mcp` (you should see `interviewstack-jobs`)
-and start searching:
+The MCP server connects automatically and the skills (tailor-application,
+resume-polish, daily-job-digest) become available. Verify with `/mcp`.
+</details>
+
+<details>
+<summary><b>Cursor</b></summary>
+
+Add to `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "interviewstack-jobs": {
+      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer ${env:INTERVIEWSTACK_MCP_KEY}" }
+    }
+  }
+}
+```
+
+For the workflow guidance, copy [`AGENTS.md`](./AGENTS.md) into your project root
+(Cursor reads it), or add it under `.cursor/rules/`.
+</details>
+
+<details>
+<summary><b>VS Code + GitHub Copilot</b> (agent mode)</summary>
+
+Add to `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "interviewstack-jobs": {
+      "type": "http",
+      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer ${input:interviewstack_key}" }
+    }
+  },
+  "inputs": [
+    {
+      "id": "interviewstack_key",
+      "type": "promptString",
+      "description": "InterviewStack.io MCP key",
+      "password": true
+    }
+  ]
+}
+```
+
+VS Code prompts once for the key and stores it securely. For guidance, drop
+[`AGENTS.md`](./AGENTS.md) in the repo root — Copilot reads it (or
+`.github/copilot-instructions.md`).
+</details>
+
+<details>
+<summary><b>OpenAI Codex CLI</b></summary>
+
+Add to `~/.codex/config.toml` (or `.codex/config.toml` per project):
+
+```toml
+[mcp_servers.interviewstack-jobs]
+url = "https://mcp-job-search.interviewstack-io.workers.dev/mcp"
+bearer_token_env_var = "INTERVIEWSTACK_MCP_KEY"
+```
+
+Codex reads [`AGENTS.md`](./AGENTS.md) natively — copy it into your project root.
+</details>
+
+<details>
+<summary><b>Windsurf</b></summary>
+
+Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "interviewstack-jobs": {
+      "serverUrl": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer ${env:INTERVIEWSTACK_MCP_KEY}" }
+    }
+  }
+}
+```
+
+Windsurf reads [`AGENTS.md`](./AGENTS.md) — copy it into your project root.
+</details>
+
+<details>
+<summary><b>Any other MCP client</b></summary>
+
+Point your client at a remote **Streamable-HTTP** MCP server:
+
+```json
+{
+  "mcpServers": {
+    "interviewstack-jobs": {
+      "type": "http",
+      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer YOUR_KEY_HERE" }
+    }
+  }
+}
+```
+
+Some clients (e.g. older Claude Desktop builds) only support stdio MCP — bridge with
+[`mcp-remote`](https://www.npmjs.com/package/mcp-remote):
+`npx mcp-remote https://mcp-job-search.interviewstack-io.workers.dev/mcp --header "Authorization: Bearer YOUR_KEY"`.
+Then add [`AGENTS.md`](./AGENTS.md) for the workflow guidance.
+</details>
+
+Once connected, try:
 
 > "Find me senior backend roles, remote, posted this week — and draft tailored
 > applications for the best two. Here's my resume: [paste]"
@@ -56,7 +173,10 @@ and start searching:
   — resolve what you want to the board's canonical taxonomy (more accurate than
   free-text title matching).
 
-### Skills
+### Skills / workflow guidance
+The same workflows, delivered two ways: as **Claude Code skills** (auto-installed by
+the plugin) and as a portable **[`AGENTS.md`](./AGENTS.md)** for every other tool.
+
 - **tailor-application** — find roles that genuinely fit you, then draft tailored
   resume bullets + a cover note + the apply link for the best matches. Drafts only;
   you review and submit. *"Find roles that fit my background and help me apply."*
@@ -65,6 +185,11 @@ and start searching:
   *"Make my resume stronger for senior data scientist roles."*
 - **daily-job-digest** — a recurring, low-noise roundup of fresh roles matching your
   criteria, on your own scheduler. *"Send me new ML engineer jobs every morning."*
+
+> **On other tools:** add the MCP server (Step 2) and drop [`AGENTS.md`](./AGENTS.md)
+> in your project — that gives the agent the same curated-filters-first workflow the
+> Claude skills encode. Individual skill files are also in [`skills/`](./skills) if
+> you'd rather copy one into your tool's rules.
 
 ---
 
@@ -83,36 +208,8 @@ WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
 > everyone. The setup script randomizes the time for you; if you schedule manually,
 > pick a random minute (e.g. `07:23`, not `08:00`). The digest isn't time-critical.
 
----
-
-## Not using Claude Code?
-
-The skills are plain Markdown — copy them into any client that supports skills/
-custom instructions, and configure the MCP server manually.
-
-**Skills:** copy from [`skills/`](./skills) (e.g. `cp -r skills/* ~/.claude/skills/`).
-
-**MCP server** (manual config — Streamable HTTP):
-
-```bash
-claude mcp add --transport http interviewstack-jobs \
-  https://mcp-job-search.interviewstack-io.workers.dev/mcp \
-  --header "Authorization: Bearer $INTERVIEWSTACK_MCP_KEY"
-```
-
-Or in a client's MCP config:
-
-```json
-{
-  "mcpServers": {
-    "interviewstack-jobs": {
-      "type": "http",
-      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
-      "headers": { "Authorization": "Bearer YOUR_KEY_HERE" }
-    }
-  }
-}
-```
+The cron template runs Claude Code headlessly; on another tool, schedule that tool's
+equivalent headless/agent command with the same jittered timing.
 
 ---
 
