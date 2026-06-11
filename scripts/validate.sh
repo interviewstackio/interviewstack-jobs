@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Validate the marketplace + plugin manifests and skills. Runs in CI and locally.
-# A broken manifest means /plugin install fails for every user — so we gate it.
+# A broken manifest means /plugin install fails for every user - so we gate it.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -30,13 +30,13 @@ for src in $(jq -r '.plugins[].source' "$MK" 2>/dev/null); do
   jq -e . "$PJ" >/dev/null 2>&1 && ok "$PJ valid JSON" || err "$PJ invalid JSON"
   jq_get "$PJ" '.name' >/dev/null && ok "$dir: has name" || err "$dir: missing .name"
   jq_get "$PJ" '.version' >/dev/null && ok "$dir: has version" || err "$dir: missing .version"
-  # MCP server (inline) — if present, must be type http with a url
+  # MCP server (inline) - if present, must be type http with a url
   if jq -e '.mcpServers' "$PJ" >/dev/null 2>&1; then
     jq -e '.mcpServers | to_entries[] | select(.value.type=="http" and (.value.url|type=="string"))' "$PJ" >/dev/null 2>&1 \
       && ok "$dir: mcpServers http config present" || err "$dir: mcpServers present but malformed"
     # the auth header must reference an env var, never a hard-coded key
     if jq -r '.mcpServers[].headers.Authorization // ""' "$PJ" | grep -qE 'Bearer isk_'; then
-      err "$dir: HARD-CODED key in Authorization header — must use \${INTERVIEWSTACK_MCP_KEY}"
+      err "$dir: HARD-CODED key in Authorization header - must use \${INTERVIEWSTACK_MCP_KEY}"
     else
       ok "$dir: no hard-coded key in headers"
     fi

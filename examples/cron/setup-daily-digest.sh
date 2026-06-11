@@ -4,7 +4,7 @@
 #
 # WHY JITTER MATTERS: a daily digest is the classic "thundering herd" risk. If
 # every user schedules 09:00 sharp, thousands of requests hit the shared job
-# database in one synchronized burst — spiking latency and failing requests for
+# database in one synchronized burst - spiking latency and failing requests for
 # everyone. This script picks a RANDOM minute (and a random hour inside your
 # window) so load spreads out. The digest is not time-critical; a few minutes of
 # jitter costs you nothing and keeps the service fast for all users.
@@ -21,7 +21,7 @@ set -euo pipefail
 WINDOW_START="${WINDOW_START:-6}"   # earliest hour (inclusive)
 WINDOW_END="${WINDOW_END:-9}"       # latest hour (inclusive)
 
-# What the digest should look for. Edit freely — the skill resolves these to the
+# What the digest should look for. Edit freely - the skill resolves these to the
 # board's canonical taxonomy at run time.
 DIGEST_PROMPT="${DIGEST_PROMPT:-Run my daily job digest: new roles matching my saved criteria, top 6, deduped against the last run.}"
 
