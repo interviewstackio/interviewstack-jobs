@@ -163,6 +163,61 @@ Once connected, try:
 
 ---
 
+## Use a local, open model (free and private)
+
+Prefer to run the AI on your own machine? Point a local open-source model at the same
+MCP server. Two real wins:
+
+- **Free.** No API keys, no per-token bills. The model runs on your hardware; your only
+  cost is your own compute.
+- **Private.** Your model and your **resume stay on your machine**. (Job search still
+  calls our hosted MCP, so the job data comes from InterviewStack.io, but your resume
+  and the model never leave your computer.)
+
+**What you need**
+
+1. A local runtime. [Ollama](https://ollama.com) is the simplest.
+2. A model that is good at **tool calling** - this workflow is multi-step (the agent
+   calls `find_roles`, then `search_jobs`, then `get_job`), so an agentic/coding model
+   is the right pick. A strong, ~30B example is **`qwen3-coder:30b`** (tuned for tool
+   use; budget roughly 24 GB+ of RAM/VRAM at a 4-bit quant). Smaller 7-14B models work
+   but are less reliable at the multi-tool flow. (If you specifically want a ~27B model,
+   Google's `gemma3:27b` is another option, but pick one trained for tool calling.)
+3. An MCP-capable agent client that supports local models, such as
+   [Cline](https://cline.bot) for VS Code.
+
+**Recipe: Cline + Ollama + Qwen3-Coder**
+
+```bash
+# 1. Pull the model (see ollama.com/library for current tags)
+ollama pull qwen3-coder:30b
+```
+
+```json
+// 2. In Cline, add the MCP server (MCP Servers -> Configure), remote HTTP:
+{
+  "mcpServers": {
+    "interviewstack-jobs": {
+      "type": "streamableHttp",
+      "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer YOUR_KEY" }
+    }
+  }
+}
+```
+
+3. In Cline, choose **Ollama** as the API provider and `qwen3-coder:30b` as the model.
+4. Drop [`AGENTS.md`](./AGENTS.md) into your workspace so the model follows the
+   curated-filters-first workflow, then ask it to find roles and tailor to your resume.
+
+> **Honest note:** local models are less reliable at multi-step tool orchestration than
+> frontier hosted models, so expect to guide them a bit more. The curated-filters-first
+> design (resolve the role with `find_roles`, then a structured `search_jobs`) keeps each
+> step simple, which helps smaller models stay on track. If your client can't reach the
+> remote server directly, bridge it with `mcp-remote` (see "Any other MCP client" above).
+
+---
+
 ## What you get
 
 ### Tools (via the MCP server)
