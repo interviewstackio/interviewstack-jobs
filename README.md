@@ -17,7 +17,7 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ## Quick start - two copy-pastes, then just talk
 
-1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), name your key (e.g. "work-laptop") and click Create. That page fills your key into the commands below automatically. One active key at a time - delete it from the same page if you need a fresh one.
+1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp) and click Create key. That page fills your key into the commands below automatically. One active key at a time - delete it from the same page if you need a fresh one.
 2. **Paste one line in your Terminal** (saves the key permanently):
    ```bash
    echo 'export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"' >> ~/.zshrc && source ~/.zshrc
@@ -44,10 +44,10 @@ Prefer to script the schedule yourself instead of asking in chat? See
 
 ## Step 1 - Get your API key (all tools)
 
-Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**,
-name your key (e.g. `work-laptop`) and click **Create key**. Copy the key
-(`isk_…`) - it's shown once. One active key at a time: delete it from the same
-page if you need a fresh one (anything still using the old key stops working).
+Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**
+and click **Create key**. Copy the key (`isk_…`) - it's shown once. One active
+key at a time: delete it from the same page if you need a fresh one (anything
+still using the old key stops working).
 
 ```bash
 export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"
