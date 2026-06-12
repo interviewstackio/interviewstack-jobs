@@ -46,6 +46,11 @@ Notes:
   "not listed" rather than guessing.
 - If a role search is thin, the response includes a `similar` section (adjacent
   roles in the same category) - present those as *related*, not exact matches.
+- **A weak first page is not the answer.** Results are newest-first, and some roles
+  carry classification noise. Page deeper (`nextCursor`, 2-3 pages, moderate limit),
+  widen `datePosted`, or try adjacent roles BEFORE concluding - and if real fits stay
+  scarce, present the closest matches with honest gaps. Never reply "no matching
+  jobs" from a single page.
 
 ## Common workflows
 

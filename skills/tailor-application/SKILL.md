@@ -58,6 +58,22 @@ intent to canonical filter values; don't guess job titles.
   Pass `countries`/`locations` to target elsewhere; that overrides the default.
 - If salary matters, note **many postings have no salary** - filtering on it shrinks results sharply.
 
+### 1b. Page 1 weak? Dig before you shrug
+Results are **newest-first, not best-first**, and some roles (e.g. Engineering
+Manager) carry classification noise - so a first page where nothing genuinely fits
+is NORMAL, not the final answer. Before drawing any conclusion:
+- **Page deeper** with `nextCursor` - 2-3 more pages at a moderate `limit` (20-30).
+  Keep the total around ~100-150 jobs reviewed (free-tier users have a 200-jobs/day
+  cap - leave headroom).
+- **Widen the window** (`datePosted: "week"` → `"month"`) or relax a secondary
+  filter (level, work mode) - never the user's hard constraints.
+- **Try adjacent roles** from the same category (the `similar` section, or
+  `roleCategories`) - clearly labeled as related, not exact.
+Only after that, present the closest real matches with honest gaps. **Never end a
+user's first search with a bare "no matching jobs found"** - that's a dead end for
+them; nearest-fits with named gaps plus an offer to adjust filters always beats an
+empty answer.
+
 ### 2. Rank by *fit*, not keywords
 For each candidate job, judge fit against the candidate's **real** experience:
 - **Skills overlap** - how many of the job's listed skills they actually have.
