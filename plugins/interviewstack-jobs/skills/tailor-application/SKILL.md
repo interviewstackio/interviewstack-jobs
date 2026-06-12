@@ -63,8 +63,9 @@ Results are **newest-first, not best-first**, and some roles (e.g. Engineering
 Manager) carry classification noise - so a first page where nothing genuinely fits
 is NORMAL, not the final answer. Before drawing any conclusion:
 - **Page deeper** with `nextCursor` - 2-3 more pages at a moderate `limit` (20-30).
-  Keep the total around ~100-150 jobs reviewed (free-tier users have a 200-jobs/day
-  cap - leave headroom).
+  **Watch the `limits` field in every response** (your remaining daily budget): each
+  page costs its `limit` in jobs and each `get_job` costs 1, so stop paging while
+  `jobsRemainingToday` still has ~10+ of headroom for the detail fetches.
 - **Widen the window** (`datePosted: "week"` → `"month"`) or relax a secondary
   filter (level, work mode) - never the user's hard constraints.
 - **Try adjacent roles** from the same category (the `similar` section, or

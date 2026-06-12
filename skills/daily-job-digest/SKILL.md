@@ -94,8 +94,9 @@ Details each piece relies on:
    `skills`, `locations`/`countries`, `workModes`, `salaryMin`. Use `query` (raw
    title text) only as a last resort. Sort `recent` (default).
 3. **Stay well within the daily caps.** Each user has a `jobsPerDay` egress cap
-   (Free 200 / Pro 2000). A digest should pull **one modest page** (e.g. `limit:10-20`),
-   not paginate deeply - leave the user headroom for interactive searches the same day.
+   (Free 200 / Pro 2000) - every response's `limits` field shows what's left today.
+   A digest should pull **one modest page** (e.g. `limit:10-20`), not paginate
+   deeply - leave the user headroom for interactive searches the same day.
    If a run is throttled (HTTP 429 `jobs_daily`/`daily`), **stop and report it
    gently** ("you've hit today's limit"); do NOT hammer retries.
 4. **De-dupe against the last run.** Track the job ids (or the newest `datePosted`)
