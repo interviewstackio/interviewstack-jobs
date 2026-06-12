@@ -213,7 +213,8 @@ you want explicitly:
 
 ```bash
 DIGEST_PROMPT="Run my daily job digest: new senior ML engineer roles, remote, US, \
-posted today. Top 6, save the best 2-3 to my tracker with concrete fit reasons." \
+posted in the last 3 days, deduped against my last run. Top 6, save the best 2-3 \
+to my tracker with concrete fit reasons." \
 WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
 ```
 

@@ -60,9 +60,10 @@ morning" (or anything like it), you do all of the setup conversationally:
 
    Embed the key's VALUE (cron doesn't read shell profiles) and bake the user's
    criteria INTO the prompt (each scheduled run starts fresh, with no memory), e.g.:
-   *"Run my daily job digest: new senior ML engineer roles, remote, US, posted
-   today. Top 6, save the best 2-3 genuine fits to my InterviewStack tracker with
-   concrete fit reasons, and end with the my-applications link."*
+   *"Run my daily job digest: new senior ML engineer roles, remote, US, posted in
+   the last 3 days, deduped against my last run. Top 6, save the best 2-3 genuine
+   fits to my InterviewStack tracker with concrete fit reasons, and end with the
+   my-applications link."*
    On platforms without cron, use that platform's scheduler (Task Scheduler,
    launchd, /loop) with the same jittered timing.
 4. Close the loop in plain language: "Done - every morning around 7:23 I'll check
@@ -89,7 +90,7 @@ Details each piece relies on:
    `find_skills` / `find_locations` for those; `list_filter_options` for valid
    `levels`/`workModes`/etc. If `find_roles` returns `supported:false`, tell the user
    the board doesn't cover that role and stop scheduling junk searches.
-2. **Search for what's NEW since last run.** Use `datePosted:"today"` for a daily
+2. **Search for what's NEW since last run.** Use `datePosted:"3days"` for a daily
    digest (`"week"` for weekly), with the structured filters - `roles`, `levels`,
    `skills`, `locations`/`countries`, `workModes`, `salaryMin`. Use `query` (raw
    title text) only as a last resort. Sort `recent` (default).
@@ -149,6 +150,6 @@ Keep it skimmable - one compact line per role:
 → `find_roles("ML engineer")` → pick "Machine Learning Engineer" → store criteria →
 schedule daily at a **random** time like **07:23** (window 06:00-09:00) → each run:
 `search_jobs(roles=["Machine Learning Engineer"], levels=["senior"], remote=true,
-countries=["US"], datePosted="today", limit=15)` → de-dupe vs yesterday → top 6 →
+countries=["US"], datePosted="3days", limit=15)` → de-dupe vs yesterday → top 6 →
 `save_job` the best 2-3 with concrete fit reasons → compact digest "via
 InterviewStack.io" ending with the my-applications link.

@@ -73,7 +73,9 @@ over duties, mirror real language, calibrate to level, surface gaps honestly. Ne
 fabricate.
 
 ### Daily digest
-Each run: search what's **new** (`datePosted: "today"`) with the stored filters,
+Each run: search what's **new** (`datePosted: "3days"` - jobs are ingested up to
+a day after posting, so "today" undercounts; de-dupe makes the overlap free) with
+the stored filters,
 **de-dupe vs the last run**, rank by fit, surface the top 5-8 as a compact digest.
 **Schedule with jitter** - never on-the-hour. If you set up the cron, pick a random
 minute (e.g. `07:23`, not `08:00`); a synchronized herd of digests hits the shared
