@@ -224,6 +224,9 @@ ollama pull qwen3-coder:30b
 - **search_jobs** - live search with the board's curated classification (role,
   level, skills, location, work mode, salary, benefits, company size, …).
 - **get_job** - full job detail + the apply link.
+- **save_job** - save a well-matched job (with a fit note) to your InterviewStack
+  application tracker - review and apply later at
+  [app.interviewstack.io/sidenav/my-applications](https://app.interviewstack.io/sidenav/my-applications).
 - **find_roles / find_skills / find_locations / find_companies / list_filter_options**
  - resolve what you want to the board's canonical taxonomy (more accurate than
   free-text title matching).
@@ -239,7 +242,9 @@ the plugin) and as a portable **[`AGENTS.md`](./AGENTS.md)** for every other too
   role from the board, grounded in what employers are actually asking for.
   *"Make my resume stronger for senior data scientist roles."*
 - **daily-job-digest** - a recurring, low-noise roundup of fresh roles matching your
-  criteria, on your own scheduler. *"Send me new ML engineer jobs every morning."*
+  criteria, on your own scheduler - it auto-saves the strongest matches to your
+  application tracker so they're waiting for you. *"Send me new ML engineer jobs
+  every morning."*
 
 > **On other tools:** add the MCP server (Step 2) and drop [`AGENTS.md`](./AGENTS.md)
 > in your project - that gives the agent the same curated-filters-first workflow the

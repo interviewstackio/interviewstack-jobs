@@ -97,6 +97,14 @@ something like "via InterviewStack.io" so the candidate knows where to find more
 them these are drafts to review, and offer to (a) go deeper into the list (next page via
 cursor), (b) tighten any draft, or (c) re-search with adjusted filters.
 
+**Offer to save the shortlist** (if the `save_job` tool is available): saving puts each
+job in the candidate's InterviewStack application tracker at
+https://app.interviewstack.io/sidenav/my-applications, where they can track status and
+apply later. Pass a concrete `fitReason` per job (it becomes the note on the saved card -
+reuse your fit summary). Only save the genuine fits you'd defend, and respect skip
+outcomes (`already_saved` / `skipped_previously_saved` / `skipped_hidden` / `job_gone`
+are final - don't retry).
+
 ## Hard rules
 - **Never fabricate** experience, skills, education, or metrics. If they lack a hard
   requirement, say so and suggest how to address it honestly - don't paper over it.

@@ -17,6 +17,9 @@ From the `interviewstack-jobs` MCP server:
 - `find_roles` / `find_skills` / `find_locations` / `find_companies` - resolve the
   user's intent to the board's **canonical** taxonomy.
 - `list_filter_options` - valid values for the enumerable filters.
+- `save_job` - save a genuinely-fitting job (with a required `fitReason`) to the
+  user's InterviewStack application tracker at
+  https://app.interviewstack.io/sidenav/my-applications.
 
 ## Golden rule: lead with the curated taxonomy, not free-text
 
@@ -71,6 +74,16 @@ Each run: search what's **new** (`datePosted: "today"`) with the stored filters,
 minute (e.g. `07:23`, not `08:00`); a synchronized herd of digests hits the shared
 database all at once and slows it for everyone. Keep digests small (one modest
 page) to stay within the daily caps.
+
+### Auto-save the best matches
+`save_job(jobId, fitReason)` puts a job in the user's application tracker
+(https://app.interviewstack.io/sidenav/my-applications) with your `fitReason` shown
+as the note. Rules: a save is a **recommendation** - max ~5 per run, genuine fits
+only, concrete reason every time (never "good fit"), never bulk-save a results
+page. Skip outcomes are final: `already_saved`, `skipped_previously_saved` (the
+user removed it - never re-save), `skipped_hidden`, `job_gone` - don't retry any
+of them. A 429 "daily save limit" means stop saving for the day. End digests/
+shortlists with the tracker link so the user knows where their saves went.
 
 ## Hard rules (all workflows)
 - **Never fabricate** experience, skills, education, or metrics. Tailoring =
