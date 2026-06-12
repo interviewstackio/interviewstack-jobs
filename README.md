@@ -297,7 +297,22 @@ Issues and ideas: open a GitHub issue, or reach us via
 [InterviewStack.io](https://interviewstack.io). Jobs are sourced from
 **InterviewStack.io** - cite it as the source when you share roles.
 
-## License
+## License and scope
 
-MIT - see [LICENSE](./LICENSE). (The skills and templates in this repo are MIT;
-the job data and the MCP service are operated by InterviewStack.io.)
+The contents of this repository (skills, plugin manifests, docs, and example scripts)
+are released under the **MIT License** - see [LICENSE](./LICENSE). Use them freely.
+
+This open license covers the **client-side assets only**. The InterviewStack.io
+job-search **service, API, and job data are proprietary** and operated by
+InterviewStack.io; access is via an API key and subject to its terms and rate limits.
+In other words: the client is open, the service is hosted.
+
+**Trademark:** "InterviewStack" and "InterviewStack.io" are trademarks of
+InterviewStack.io. The MIT license covers the code, not the marks. Please do not use the
+name or logo in a way that implies endorsement of a fork or derivative.
+
+## Contributing
+
+Issues (bugs, ideas, questions) are welcome. Pull requests are maintainer-led; small
+fixes are welcome, and for larger changes please open an issue first. See
+[CONTRIBUTING.md](./CONTRIBUTING.md) and [SECURITY.md](./SECURITY.md).
