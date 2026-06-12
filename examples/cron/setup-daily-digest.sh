@@ -23,7 +23,7 @@ WINDOW_END="${WINDOW_END:-9}"       # latest hour (inclusive)
 
 # What the digest should look for. Edit freely - the skill resolves these to the
 # board's canonical taxonomy at run time.
-DIGEST_PROMPT="${DIGEST_PROMPT:-Run my daily job digest: new roles matching my saved criteria, top 6, deduped against the last run.}"
+DIGEST_PROMPT="${DIGEST_PROMPT:-Run my daily job digest: new roles matching my saved criteria, top 6, deduped against the last run. Save the best 2-3 genuine fits to my InterviewStack tracker with a concrete fit reason each, and end with the my-applications link.}"
 
 if ! command -v claude >/dev/null 2>&1; then
   echo "error: 'claude' CLI not found on PATH." >&2

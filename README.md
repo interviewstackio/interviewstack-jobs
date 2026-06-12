@@ -15,6 +15,19 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ---
 
+## Quick start - the whole thing in 5 steps
+
+1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), click Generate. ([Step 1](#step-1---get-your-api-key-all-tools))
+2. **Make the key persistent** - add `export INTERVIEWSTACK_MCP_KEY="isk_…"` to your `~/.zshrc` / `~/.bashrc` (a one-off export dies with the terminal).
+3. **Connect your tool** - Claude Code: `/plugin marketplace add interviewstackio/interviewstack-jobs` then `/plugin install interviewstack-jobs@interviewstack-jobs`. Other tools: [Step 2](#step-2---connect-your-tool).
+4. **Try it** - paste a [starter prompt](#starter-prompts---what-to-ask-it) ("find roles that fit my resume and save the best ones to my tracker").
+5. **Put it on autopilot** - `./examples/cron/setup-daily-digest.sh` schedules a jittered daily digest that auto-saves your best new matches to [your application tracker](https://app.interviewstack.io/sidenav/my-applications). ([Step 3](#step-3---daily-digest-on-autopilot))
+
+Steps 1-4 give you everything interactively; step 5 is what makes new matching jobs
+show up in your tracker every morning without you asking.
+
+---
+
 ## Step 1 - Get your API key (all tools)
 
 Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**
@@ -156,10 +169,95 @@ Some clients (e.g. older Claude Desktop builds) only support stdio MCP - bridge 
 Then add [`AGENTS.md`](./AGENTS.md) for the workflow guidance.
 </details>
 
-Once connected, try:
+Once connected, grab a prompt from [Starter prompts](#starter-prompts---what-to-ask-it) below.
 
-> "Find me senior backend roles, remote, posted this week - and draft tailored
-> applications for the best two. Here's my resume: [paste]"
+---
+
+## Step 3 - Daily digest on autopilot
+
+This is the step that makes the whole thing passive: a scheduled run finds what's
+**new** for you each morning, **auto-saves the strongest matches** (each with a
+one-line "why it fits" note) into your
+[application tracker](https://app.interviewstack.io/sidenav/my-applications), and
+writes a compact digest to a log. You review and apply from the tracker - jobs you
+remove are never re-saved.
+
+```bash
+# Picks a RANDOM time inside your window (see note below) and installs a cron entry.
+WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
+```
+
+**Put your criteria in the prompt.** Each headless run starts fresh, so tell it what
+you want explicitly:
+
+```bash
+DIGEST_PROMPT="Run my daily job digest: new senior ML engineer roles, remote, US, \
+posted today. Top 6, save the best 2-3 to my tracker with concrete fit reasons." \
+WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
+```
+
+> **⏰ Always jitter the schedule.** Don't run it at 09:00 sharp. If everyone runs
+> on the hour, the shared job database takes a synchronized hit and gets slow for
+> everyone. The setup script randomizes the time for you; if you schedule manually,
+> pick a random minute (e.g. `07:23`, not `08:00`). The digest isn't time-critical.
+
+The cron template runs Claude Code headlessly; on another tool, schedule that tool's
+equivalent headless/agent command with the same jittered timing.
+
+---
+
+## Starter prompts - what to ask it
+
+Copy-paste any of these into your connected AI tool. They're ordered roughly by
+where you are in a job search.
+
+**Explore what the board covers**
+> "What job search tools do you have from InterviewStack, and what roles does the
+> board support for someone with my background? Here's my resume: [paste]"
+
+**Find roles that actually fit you (not keyword soup)**
+> "Here's my resume: [paste]. Find roles on the InterviewStack board that genuinely
+> fit my background - rank by real fit, be honest about stretches, and show salary
+> where listed."
+
+**Targeted search with hard constraints**
+> "Find senior backend engineer roles, remote, US, posted this week, paying
+> $180k+. I need visa sponsorship. Top 10, newest first."
+
+**Build a shortlist and save it for later**
+> "Search for staff product manager roles in fintech, hybrid or remote in NYC.
+> Save the 3 best fits to my InterviewStack tracker with a concrete reason for
+> each, and give me the link to review them."
+
+**Tailor applications to the best matches**
+> "Here's my resume: [paste]. Find the 2 best-fitting senior data scientist roles
+> posted this week and draft tailored resume bullets, a short cover note, and the
+> apply link for each. Save both to my tracker."
+
+**Polish your resume against real demand**
+> "Pull 8-10 real senior DevOps postings from the InterviewStack board, tell me
+> which skills and phrasings keep recurring, and rewrite my resume toward that
+> demand. Here's the current version: [paste]"
+
+**Scope a career pivot with real data**
+> "I'm a data analyst who wants to move toward ML engineering. Using the
+> InterviewStack board: which adjacent roles exist, what do their postings ask for
+> that I don't have yet, and which current openings would accept my profile today?"
+
+**Market recon**
+> "What are the highest-paying remote machine learning roles on the board right
+> now? Which companies show up most in those results?"
+
+**Set up the recurring digest (interactive alternative to Step 3)**
+> "Set up a daily job digest for me: new senior frontend roles, remote, EU,
+> every morning at a randomized time between 7 and 9. Each run, save the best 2-3
+> new matches to my tracker with fit reasons and keep the digest to 6 lines."
+
+A few habits that get better results: paste your **real resume** (fit ranking is
+only as good as what the agent knows about you), state **hard constraints**
+explicitly (visa, salary floor, location), and ask it to be **honest about
+stretches** - the board's curated taxonomy means "no good matches" is a real,
+useful answer.
 
 ---
 
@@ -250,26 +348,6 @@ the plugin) and as a portable **[`AGENTS.md`](./AGENTS.md)** for every other too
 > in your project - that gives the agent the same curated-filters-first workflow the
 > Claude skills encode. Individual skill files are also in [`skills/`](./skills) if
 > you'd rather copy one into your tool's rules.
-
----
-
-## Daily digest (optional)
-
-Want a "new jobs for me" digest every morning? The **daily-job-digest** skill runs
-on *your* scheduler. The easiest path:
-
-```bash
-# Picks a RANDOM time inside your window (see note below) and installs a cron entry.
-WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
-```
-
-> **⏰ Always jitter the schedule.** Don't run it at 09:00 sharp. If everyone runs
-> on the hour, the shared job database takes a synchronized hit and gets slow for
-> everyone. The setup script randomizes the time for you; if you schedule manually,
-> pick a random minute (e.g. `07:23`, not `08:00`). The digest isn't time-critical.
-
-The cron template runs Claude Code headlessly; on another tool, schedule that tool's
-equivalent headless/agent command with the same jittered timing.
 
 ---
 
