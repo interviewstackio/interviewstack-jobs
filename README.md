@@ -77,6 +77,11 @@ The MCP endpoint is the same everywhere:
 
 The MCP server connects automatically and the skills (tailor-application,
 resume-polish, daily-job-digest) become available. Verify with `/mcp`.
+
+**Recommended:** enable auto-update so skill improvements arrive without manual
+updates: `/plugin` → Marketplaces tab → `interviewstack-jobs` → **Enable
+auto-update**. (Third-party marketplaces don't auto-update by default;
+without this, refresh manually with `/plugin marketplace update interviewstack-jobs`.)
 </details>
 
 <details>
