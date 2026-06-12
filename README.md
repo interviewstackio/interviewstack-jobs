@@ -17,7 +17,7 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ## Quick start - two copy-pastes, then just talk
 
-1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), click Generate. That page fills your key into the commands below automatically.
+1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), name a key after where you'll use it (e.g. "work-laptop") and click Create. That page fills your key into the commands below automatically. You can hold a few named keys (one per machine) and delete any you stop using.
 2. **Paste one line in your Terminal** (saves the key permanently):
    ```bash
    echo 'export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"' >> ~/.zshrc && source ~/.zshrc
@@ -44,8 +44,11 @@ Prefer to script the schedule yourself instead of asking in chat? See
 
 ## Step 1 - Get your API key (all tools)
 
-Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**
-and click **Generate**. Copy the key (`isk_…`) - it's shown once.
+Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**,
+name a key after where you'll use it (e.g. `work-laptop`) and click **Create key**.
+Copy the key (`isk_…`) - it's shown once. You can hold a few named keys (one per
+machine/tool), delete any from the same page, and they all share one set of daily
+limits.
 
 ```bash
 export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"
