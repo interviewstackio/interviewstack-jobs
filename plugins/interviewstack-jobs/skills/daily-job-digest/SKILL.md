@@ -39,6 +39,39 @@ jitter costs the user nothing and protects the whole system. Treat jitter as
 mandatory, not optional.
 
 ## One-time setup
+
+**Set the schedule up FOR the user - don't send them to a script or docs.** When
+someone says "find new jobs matching my resume and save the best ones for me every
+morning" (or anything like it), you do all of the setup conversationally:
+
+1. Get their resume (paste or a file you can read) and confirm criteria in ONE
+   question: target role(s), level, location/remote, anything non-negotiable.
+2. Ask for a rough time window ("around breakfast?" → 06:00-09:00) - then pick a
+   **random hour in the window and a random minute 0-59** yourself (jitter rules
+   below).
+3. Install the schedule yourself on their machine. On macOS/Linux with cron
+   (`claude` CLI on PATH, `INTERVIEWSTACK_MCP_KEY` in the environment):
+
+   ```bash
+   ( crontab -l 2>/dev/null | grep -v 'interviewstack-digest'; \
+     echo '# interviewstack-digest'; \
+     echo "<MIN> <HOUR> * * * INTERVIEWSTACK_MCP_KEY='$INTERVIEWSTACK_MCP_KEY' claude -p \"<the digest prompt - see below>\" >> $HOME/.interviewstack-digest.log 2>&1" ) | crontab -
+   ```
+
+   Embed the key's VALUE (cron doesn't read shell profiles) and bake the user's
+   criteria INTO the prompt (each scheduled run starts fresh, with no memory), e.g.:
+   *"Run my daily job digest: new senior ML engineer roles, remote, US, posted
+   today. Top 6, save the best 2-3 genuine fits to my InterviewStack tracker with
+   concrete fit reasons, and end with the my-applications link."*
+   On platforms without cron, use that platform's scheduler (Task Scheduler,
+   launchd, /loop) with the same jittered timing.
+4. Close the loop in plain language: "Done - every morning around 7:23 I'll check
+   for new matching jobs and save the best ones with a note on why they fit. Review
+   and apply at https://app.interviewstack.io/sidenav/my-applications. Jobs you
+   remove there won't come back."
+
+Details each piece relies on:
+
 1. **Confirm the MCP is connected** (`search_jobs`, `get_job`, `find_roles`, …). If
    not, tell the user to connect the `interviewstack-jobs` server and stop.
 2. **Capture criteria once** (store it where your platform persists schedule config):

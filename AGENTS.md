@@ -75,6 +75,13 @@ minute (e.g. `07:23`, not `08:00`); a synchronized herd of digests hits the shar
 database all at once and slows it for everyone. Keep digests small (one modest
 page) to stay within the daily caps.
 
+When the user asks for this ("find new jobs matching my resume and save the best
+ones every morning"), **set the schedule up FOR them** - don't point at docs:
+capture resume + criteria, pick the jittered time yourself, and install the cron /
+scheduled task on their machine, baking the criteria INTO the scheduled prompt
+(headless runs start fresh) and embedding the key's value (cron doesn't read shell
+profiles). Confirm in plain language where saved jobs appear.
+
 ### Auto-save the best matches
 `save_job(jobId, fitReason)` puts a job in the user's application tracker
 (https://app.interviewstack.io/sidenav/my-applications) with your `fitReason` shown

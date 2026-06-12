@@ -15,16 +15,30 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ---
 
-## Quick start - the whole thing in 5 steps
+## Quick start - two copy-pastes, then just talk
 
-1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), click Generate. ([Step 1](#step-1---get-your-api-key-all-tools))
-2. **Make the key persistent** - add `export INTERVIEWSTACK_MCP_KEY="isk_…"` to your `~/.zshrc` / `~/.bashrc` (a one-off export dies with the terminal).
-3. **Connect your tool** - Claude Code: `/plugin marketplace add interviewstackio/interviewstack-jobs` then `/plugin install interviewstack-jobs@interviewstack-jobs`. Other tools: [Step 2](#step-2---connect-your-tool).
-4. **Try it** - paste a [starter prompt](#starter-prompts---what-to-ask-it) ("find roles that fit my resume and save the best ones to my tracker").
-5. **Put it on autopilot** - `./examples/cron/setup-daily-digest.sh` schedules a jittered daily digest that auto-saves your best new matches to [your application tracker](https://app.interviewstack.io/sidenav/my-applications). ([Step 3](#step-3---daily-digest-on-autopilot))
+1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp), click Generate. That page fills your key into the commands below automatically.
+2. **Paste one line in your Terminal** (saves the key permanently):
+   ```bash
+   echo 'export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"' >> ~/.zshrc && source ~/.zshrc
+   ```
+   (Linux/bash: use `~/.bashrc`.)
+3. **Paste two lines in Claude Code** (other tools: [Step 2](#step-2---connect-your-tool)):
+   ```
+   /plugin marketplace add interviewstackio/interviewstack-jobs
+   /plugin install interviewstack-jobs@interviewstack-jobs
+   ```
+4. **That's the whole setup. Now just ask:**
+   > "Find new jobs that match my resume and save the best ones for me every morning."
 
-Steps 1-4 give you everything interactively; step 5 is what makes new matching jobs
-show up in your tracker every morning without you asking.
+   Your assistant takes it from there: asks for your resume, sets up the morning
+   schedule itself (jittered, on your machine), and from then on the best new
+   matches land in [your application tracker](https://app.interviewstack.io/sidenav/my-applications)
+   with a note on why each one fits. You review and apply. Jobs you remove are
+   never re-saved. More ideas: [starter prompts](#starter-prompts---what-to-ask-it).
+
+Prefer to script the schedule yourself instead of asking in chat? See
+[Step 3](#step-3---daily-digest-on-autopilot).
 
 ---
 
