@@ -225,7 +225,7 @@ your key and it tells you immediately if the key itself is good.
   rate-limited, and you can delete it anytime. That's why we embed it directly
   instead of fiddling with system environment variables - fewer things to break.
 
-Still stuck? Email [hello@interviewstack.io](mailto:hello@interviewstack.io) with
+Still stuck? Email [support@interviewstack.io](mailto:support@interviewstack.io) with
 the tool you're using.
 
 ---
