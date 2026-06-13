@@ -52,6 +52,42 @@ Notes:
   scarce, present the closest matches with honest gaps. Never reply "no matching
   jobs" from a single page.
 
+## search_jobs filters reference
+
+Combine any of these. For the live, authoritative value lists call
+`list_filter_options` (enumerable fields) or the `find_*` tools (roles, skills,
+locations, companies) - the sets below are current but can shift.
+
+| Filter | What it is |
+|---|---|
+| `roles` | One specific canonical title ("Data Scientist"). Most precise; resolve with `find_roles`. |
+| `roleCategories` | A broad family that CONTAINS many roles ("Data & Analytics"). Wider, less precise. |
+| `levels` | Seniority: `entry`, `junior`, `mid_level`, `senior`, `staff`. |
+| `roleTypes` | `ic`, `manager`, `executive`. Orthogonal to levels. |
+| `skills` | Specific skills/tools (["Rust","A/B testing"]). Resolve with `find_skills`. Domain specifics go here, NOT in `roles`/`query`. |
+| `locations` | City/region text (substring match). For a whole country use `countries`. |
+| `countries` | ISO codes (`US`, `GB`, `IN`). Defaults to the user's country if location omitted. |
+| `workModes` | `remote`, `hybrid`, `onsite`. |
+| `remote` | Boolean shortcut for remote-only. |
+| `jobTypes` | `full_time`, `part_time`, `contract`, `internship`, `temporary`, `freelance`, `volunteer`. |
+| `salaryMin` / `salaryMax` | Pay bounds. Many postings have NO salary, so this shrinks results sharply. |
+| `benefits` | Require a perk (apply only when stated): `visa`, `equity`, `stock_options`, `401k`, `health_insurance`, `unlimited_pto`, … |
+| `companies` | Specific employers; resolve with `find_companies`. |
+| `companySize` | `startup`, `small`, `medium`, `large`, `enterprise`. Partial coverage (enterprise-skewed). |
+| `industries` | `technology`, `fintech`, `healthcare`, … (well populated). |
+| `fundingStages` | `public`, `private`, `seed`, `series_a`, … Partial coverage + values not fully standardized; rough cut only. |
+| `education` | `bachelor`, `master`, `phd`, … Partial coverage - soft preference. |
+| `languages` | Spoken languages (`english`, `german`). Sparse. |
+| `travel` | `none`, `minimal`, `moderate`, `extensive`. Rarely populated - avoid unless a dealbreaker. |
+| `datePosted` | `today`, `3days`, `week`, `month`. Prefer `3days` for fresh (ingest lags posting ~1 day). |
+| `sort` | `recent` (default, paginates) or `salary` (top pay, no deep paging). |
+| `limit` / `cursor` | Page size (1-50, default 20) / paging token from `nextCursor`. |
+
+Value matching is forgiving on case/separators for the enum fields (`Senior` ==
+`senior`, `full-time` == `full_time`, `us` == `US`) - but `roleCategories`,
+`industries` and `companies` still need their canonical spelling, so when in doubt
+call `list_filter_options` / `find_*`.
+
 ## Common workflows
 
 ### Find & tailor applications

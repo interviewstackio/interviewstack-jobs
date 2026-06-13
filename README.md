@@ -351,6 +351,10 @@ ollama pull qwen3-coder:30b
  - resolve what you want to the board's canonical taxonomy (more accurate than
   free-text title matching).
 
+See the full **[search_jobs filters reference](./AGENTS.md#search_jobs-filters-reference)**
+(every filter, its accepted values, and the roles-vs-categories style distinctions),
+or call `list_filter_options` / the `find_*` tools for the live value lists with counts.
+
 ### Skills / workflow guidance
 The same workflows, delivered two ways: as **Claude Code skills** (auto-installed by
 the plugin) and as a portable **[`AGENTS.md`](./AGENTS.md)** for every other tool.
