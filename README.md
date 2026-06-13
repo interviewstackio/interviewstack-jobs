@@ -15,15 +15,15 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ---
 
-## Quick start - two copy-pastes, then just talk
+## Quick start - one copy-paste, then just talk
 
-1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp) and click Create key. That page fills your key into the commands below automatically. One active key at a time - delete it from the same page if you need a fresh one.
-2. **Paste one line in your Terminal** (saves the key permanently):
+1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp) and click Create key. That page fills your key into the command below automatically and has a **Test connection** button to confirm it works. One active key at a time - delete it from the same page if you need a fresh one.
+2. **Connect Claude Code** - paste this ONE line in your Terminal (your key is embedded, no shell setup, nothing to forget):
    ```bash
-   echo 'export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"' >> ~/.zshrc && source ~/.zshrc
+   claude mcp add --transport http interviewstack-jobs https://mcp-job-search.interviewstack-io.workers.dev/mcp --header "Authorization: Bearer isk_your_key_here"
    ```
-   (Linux/bash: use `~/.bashrc`.)
-3. **Paste two lines in Claude Code** (other tools: [Step 2](#step-2---connect-your-tool)):
+   Then fully quit and reopen Claude Code, and run `/mcp` to confirm **interviewstack-jobs** is connected. Using a different tool? See [Step 2](#step-2---connect-your-tool).
+3. **(Optional) add the guided skills** - paste in Claude Code for auto-updating tailor/resume/digest workflows:
    ```
    /plugin marketplace add interviewstackio/interviewstack-jobs
    /plugin install interviewstack-jobs@interviewstack-jobs
@@ -45,21 +45,16 @@ Prefer to script the schedule yourself instead of asking in chat? See
 ## Step 1 - Get your API key (all tools)
 
 Sign in at **[app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp)**
-and click **Create key**. Copy the key (`isk_…`) - it's shown once. One active
-key at a time: delete it from the same page if you need a fresh one (anything
-still using the old key stops working).
+and click **Create key**. Copy the key (`isk_…`) - it's shown once. The page also
+has a **Test connection** button: paste your key there to confirm it works before
+you wire it into a tool. One active key at a time: delete it from the same page if
+you need a fresh one (anything still using the old key stops working).
 
-```bash
-export INTERVIEWSTACK_MCP_KEY="isk_your_key_here"
-```
-
-> Put this in your shell profile (`~/.zshrc`, `~/.bashrc`) so it persists.
-> **Never commit your key.** It's read-only and rate-limited, but treat it like a password.
->
-> GUI-launched editors (Cursor, VS Code) don't always inherit shell env vars. If
-> `${env:…}` doesn't resolve, either launch the editor from a terminal, use the
-> tool's secret-input mechanism (shown below), or paste the key directly into the
-> config (the file stays on your machine).
+> **Paste the key directly into each tool's config** (shown in Step 2). The
+> configs below embed the literal key - no shell environment variables, which
+> GUI-launched editors often don't inherit and are the #1 cause of a silent
+> "Unauthorized" later. **Never commit your key.** It's read-only and
+> rate-limited, but treat it like a password; delete-and-recreate anytime.
 
 ## Step 2 - Connect your tool
 
@@ -68,40 +63,51 @@ The MCP endpoint is the same everywhere:
 `Authorization: Bearer <your key>`.
 
 <details open>
-<summary><b>Claude Code</b> - one-click (bundles the skills)</summary>
+<summary><b>Claude Code</b></summary>
+
+**Most reliable - one line in your Terminal** (key embedded, no env vars):
+
+```bash
+claude mcp add --transport http interviewstack-jobs https://mcp-job-search.interviewstack-io.workers.dev/mcp --header "Authorization: Bearer isk_your_key_here"
+```
+
+Quit and reopen Claude Code, then verify with `/mcp`.
+
+**Optional - also get the bundled, auto-updating skills** (tailor-application,
+resume-polish, daily-job-digest). Paste inside Claude Code:
 
 ```
 /plugin marketplace add interviewstackio/interviewstack-jobs
 /plugin install interviewstack-jobs@interviewstack-jobs
 ```
 
-The MCP server connects automatically and the skills (tailor-application,
-resume-polish, daily-job-digest) become available. Verify with `/mcp`.
-
-**Recommended:** enable auto-update so skill improvements arrive without manual
-updates: `/plugin` → Marketplaces tab → `interviewstack-jobs` → **Enable
-auto-update**. (Third-party marketplaces don't auto-update by default;
-without this, refresh manually with `/plugin marketplace update interviewstack-jobs`.)
+The plugin reads your key from an `INTERVIEWSTACK_MCP_KEY` environment variable,
+so if you use the plugin route, add `export INTERVIEWSTACK_MCP_KEY="isk_…"` to
+your `~/.zshrc` (or `~/.bashrc`) and relaunch Claude Code from a fresh terminal.
+The one-line command above needs none of that. Enable auto-update under `/plugin`
+→ Marketplaces → `interviewstack-jobs` → **Enable auto-update**.
 </details>
 
 <details>
 <summary><b>Cursor</b></summary>
 
-Add to `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+Add to `~/.cursor/mcp.json` (global - works in every project). Paste your real
+key in place of `isk_your_key_here`:
 
 ```json
 {
   "mcpServers": {
     "interviewstack-jobs": {
       "url": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
-      "headers": { "Authorization": "Bearer ${env:INTERVIEWSTACK_MCP_KEY}" }
+      "headers": { "Authorization": "Bearer isk_your_key_here" }
     }
   }
 }
 ```
 
-For the workflow guidance, copy [`AGENTS.md`](./AGENTS.md) into your project root
-(Cursor reads it), or add it under `.cursor/rules/`.
+Save the file, then fully quit and reopen Cursor; check **Settings → MCP** for a
+green dot. For the workflow guidance, copy [`AGENTS.md`](./AGENTS.md) into your
+project root (Cursor reads it), or add it under `.cursor/rules/`.
 </details>
 
 <details>
@@ -137,34 +143,42 @@ VS Code prompts once for the key and stores it securely. For guidance, drop
 <details>
 <summary><b>OpenAI Codex CLI</b></summary>
 
-Add to `~/.codex/config.toml` (or `.codex/config.toml` per project):
+Add to `~/.codex/config.toml`. The first line (at the very top of the file, not
+inside any `[section]`) lets Codex use a literal key instead of an environment
+variable. Paste your real key in place of `isk_your_key_here`:
 
 ```toml
+experimental_use_rmcp_client = true
+
 [mcp_servers.interviewstack-jobs]
 url = "https://mcp-job-search.interviewstack-io.workers.dev/mcp"
-bearer_token_env_var = "INTERVIEWSTACK_MCP_KEY"
+bearer_token = "isk_your_key_here"
 ```
 
-Codex reads [`AGENTS.md`](./AGENTS.md) natively - copy it into your project root.
+Save, restart Codex, then run `codex mcp list` to confirm. Codex reads
+[`AGENTS.md`](./AGENTS.md) natively - copy it into your project root.
 </details>
 
 <details>
 <summary><b>Windsurf</b></summary>
 
-Add to `~/.codeium/windsurf/mcp_config.json`:
+Add to `~/.codeium/windsurf/mcp_config.json`. Paste your real key in place of
+`isk_your_key_here`:
 
 ```json
 {
   "mcpServers": {
     "interviewstack-jobs": {
       "serverUrl": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
-      "headers": { "Authorization": "Bearer ${env:INTERVIEWSTACK_MCP_KEY}" }
+      "headers": { "Authorization": "Bearer isk_your_key_here" }
     }
   }
 }
 ```
 
-Windsurf reads [`AGENTS.md`](./AGENTS.md) - copy it into your project root.
+Save, then in Windsurf open the Cascade panel → MCP and click **Refresh** (or
+restart Windsurf). Windsurf reads [`AGENTS.md`](./AGENTS.md) - copy it into your
+project root.
 </details>
 
 <details>
@@ -191,6 +205,28 @@ Then add [`AGENTS.md`](./AGENTS.md) for the workflow guidance.
 </details>
 
 Once connected, grab a prompt from [Starter prompts](#starter-prompts---what-to-ask-it) below.
+
+### Not working? Unblock it
+
+Almost every problem is the key. The fastest fix is the **Test connection** button
+on [the key page](https://app.interviewstack.io/sidenav/job-search-mcp) - paste
+your key and it tells you immediately if the key itself is good.
+
+- **"Unauthorized" / 401** - the key is missing, mistyped, or you pasted the
+  placeholder (`isk_your_key_here`) instead of your real key. Copy the whole key
+  (starts with `isk_`), no missing characters or stray spaces. Can't find it? You
+  can't recover it - delete it on the key page and create a new one.
+- **The tool doesn't show the server** - fully **quit and reopen** the tool (not
+  just close the window); configs are only read on a fresh start. Cursor/VS
+  Code/Windsurf also have an MCP **Refresh** button.
+- **Worked yesterday, not today** - a key works only until it's deleted or
+  replaced. If you made a new key, update every tool and scheduled digest with it.
+- **Is it safe to put the key in a file?** - Yes. It only reads jobs, is
+  rate-limited, and you can delete it anytime. That's why we embed it directly
+  instead of fiddling with system environment variables - fewer things to break.
+
+Still stuck? Email [hello@interviewstack.io](mailto:hello@interviewstack.io) with
+the tool you're using.
 
 ---
 
