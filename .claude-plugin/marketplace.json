@@ -2,7 +2,7 @@
   "name": "interviewstack-jobs",
   "owner": {
     "name": "InterviewStack.io",
-    "email": "hello@interviewstack.io"
+    "email": "support@interviewstack.io"
   },
   "description": "Official InterviewStack.io job-search tools for AI coding assistants - search live, curated jobs and draft tailored applications, right from your terminal.",
   "plugins": [
