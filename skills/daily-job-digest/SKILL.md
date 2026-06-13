@@ -103,17 +103,29 @@ Details each piece relies on:
 4. **De-dupe against the last run.** Track the job ids (or the newest `datePosted`)
    you reported last time, and only surface genuinely new postings. An empty digest
    ("nothing new today") is a fine, honest result - don't pad it.
-5. **Rank the new ones by fit** to the stored criteria (skills overlap, level match,
-   location/comp). Keep the top 5-8.
+5. **Shortlist on the summary, then JUDGE ON THE DESCRIPTION (two passes).**
+   `search_jobs` returns only a summary - title, company, a **skills TAG array**,
+   level, salary - NOT the posting text. Ranking on tags alone is keyword matching:
+   "has Python + LLMs" scores like a real fit even when the actual role is unrelated.
+   So:
+   - **Pass 1 (cheap):** rank the new jobs on the summary to pick the ~10 most
+     promising.
+   - **Pass 2 (the real judgment):** call `get_job(id)` on those ~10 to read the
+     **full description**, and re-score on what the role ACTUALLY does. Pass-2 scores
+     win. This is where domain mismatch, seniority reality, and "the tags lied" get
+     caught. ~10 extra get_job calls is trivial against the daily cap.
+   - Keep the top 5-8 after pass 2.
 6. **Auto-save the BEST matches with `save_job`** (if the tool is available) so they
-   land in the user's InterviewStack application tracker:
+   land in the user's InterviewStack application tracker. **Only save jobs whose
+   DESCRIPTION you read in pass 2** - never save straight off the search summary:
    - **Quality bar, not quantity:** save at most **5 per run**, and only jobs you
      would defend as a genuine fit. A borderline match goes in the digest text, NOT
      the tracker. Junk saves train the user to ignore the feature.
-   - **`fitReason` is required and is shown to the user** as the note on the saved
-     job - make it concrete: "Senior DS role centered on LLM evaluation - matches
-     your eval-pipeline + A/B testing background; remote-US as preferred." Not
-     "good fit."
+   - **`fitReason` is required, drawn from the DESCRIPTION** (pass 2), and is shown to
+     the user as the note on the saved job - make it concrete and specific to what the
+     posting says: "Centers on LLM-eval for search relevance + A/B at scale - your
+     exact background; remote-US as preferred." NOT "has Python and LLMs" (that's a
+     tag, not a reason) and not "good fit."
    - **Respect skip outcomes.** `already_saved`, `skipped_previously_saved` (the
      user removed it before - never re-save), `skipped_hidden`, and `job_gone` are
      all final for that job: don't retry, don't re-recommend.

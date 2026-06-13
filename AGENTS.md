@@ -55,10 +55,13 @@ Notes:
 ## Common workflows
 
 ### Find & tailor applications
-1. Resolve role + filters (above), search, and **rank by real fit** - skills
-   overlap, level match, domain fit, hard constraints (location/comp/work-mode).
-   Pick the top 2-3; be honest if the best matches are stretches.
-2. `get_job(id)` on the shortlist for full descriptions + apply links.
+1. Resolve role + filters (above), search, and **shortlist** - but note `search_jobs`
+   returns only a title + **skills TAG array**, not the posting text, so this ranking
+   is provisional. Pick the ~top 5-10 promising ones.
+2. `get_job(id)` on the shortlist for the **full description**, then **re-judge fit on
+   that text** - tags overstate fit (a "Python, LLMs" tag set can be an unrelated
+   role); the description is where domain mismatch and the real seniority bar surface.
+   Keep the genuine top 2-3, honest about stretches.
 3. Per job, draft: a **fit summary** (incl. the honest gap), **tailored resume
    bullets** (reframe the user's *real* experience in the job's language - never
    invent), a short **cover note**, the specific **requirements to address**, and
@@ -93,8 +96,10 @@ profiles). Confirm in plain language where saved jobs appear.
 `save_job(jobId, fitReason)` puts a job in the user's application tracker
 (https://app.interviewstack.io/sidenav/my-applications) with your `fitReason` shown
 as the note. Rules: a save is a **recommendation** - max ~5 per run, genuine fits
-only, concrete reason every time (never "good fit"), never bulk-save a results
-page. Skip outcomes are final: `already_saved`, `skipped_previously_saved` (the
+only, concrete reason every time (never "good fit"), never bulk-save a results page.
+**Read the full description via `get_job` BEFORE saving** and base the score + reason
+on it, not on the search summary's tag array - saving off tags alone produces
+keyword-matched junk that makes the user distrust the whole feature. Skip outcomes are final: `already_saved`, `skipped_previously_saved` (the
 user removed it - never re-save), `skipped_hidden`, `job_gone` - don't retry any
 of them. A 429 "daily save limit" means stop saving for the day. End digests/
 shortlists with the tracker link so the user knows where their saves went.
