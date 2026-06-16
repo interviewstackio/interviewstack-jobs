@@ -64,6 +64,7 @@ locations, companies) - the sets below are current but can shift.
 | `roleCategories` | A broad family that CONTAINS many roles ("Data & Analytics"). Wider, less precise. |
 | `levels` | Seniority: `entry`, `junior`, `mid_level`, `senior`, `staff`. |
 | `roleTypes` | `ic`, `manager`, `executive`. Orthogonal to levels. |
+| `minRoleConfidence` | Precision floor on how confidently a job was classified into its role: `high` (~95% accurate) or `medium` (~77%+). A FLOOR, not an exact band - `medium` includes `high`. Omit for all qualified results. Use `high` on noisy roles to cut borderline matches and save `get_job` calls (trade-off: fewer results). |
 | `skills` | Specific skills/tools (["Rust","A/B testing"]). Resolve with `find_skills`. Domain specifics go here, NOT in `roles`/`query`. |
 | `locations` | City/region text (substring match). For a whole country use `countries`. |
 | `countries` | ISO codes (`US`, `GB`, `IN`). Defaults to the user's country if location omitted. |
