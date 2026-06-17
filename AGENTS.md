@@ -41,7 +41,9 @@ Notes:
 - Results are newest-first; pass the returned `nextCursor` back as `cursor` to page.
 - `sort: "salary"` ranks by pay (top results only). Default `recent` paginates.
 - Location defaults to the user's home country (set on their key); pass
-  `countries`/`locations` to override.
+  `countries`/`locations` to override. For precision, `find_locations` also yields a
+  `geonameId` (exact city, disambiguates same-named cities), matching `metros` (whole
+  metro area), and a `center` for `near` `{lat,lng,radiusKm}` radius search.
 - Many postings have **no salary** - filtering on it shrinks results sharply; say
   "not listed" rather than guessing.
 - If a role search is thin, the response includes a `similar` section (adjacent
@@ -66,7 +68,10 @@ locations, companies) - the sets below are current but can shift.
 | `roleTypes` | `ic`, `manager`, `executive`. Orthogonal to levels. |
 | `minRoleConfidence` | Precision floor on how confidently a job was classified into its role: `high` (~95% accurate) or `medium` (~77%+). A FLOOR, not an exact band - `medium` includes `high`. Omit for all qualified results. Use `high` on noisy roles to cut borderline matches and save `get_job` calls (trade-off: fewer results). |
 | `skills` | Specific skills/tools (["Rust","A/B testing"]). Resolve with `find_skills`. Domain specifics go here, NOT in `roles`/`query`. |
-| `locations` | City/region text (substring match). For a whole country use `countries`. |
+| `locations` | City NAME text (matches EVERY city with that name). Resolve with `find_locations`. For one exact city use `geonameIds`; for a whole metro use `metros`; for a country use `countries`. |
+| `geonameIds` | Exact-city match by GeoNames id (`[5128581]`). Disambiguates same-named cities (the two Springfields). Get ids from `find_locations` (each match returns a `geonameId`). More precise than `locations`. |
+| `metros` | Whole metro area by id (`sf_bay`, `nyc`, `london`, `bengaluru`) → expands to all member cities (SF + Oakland + San Jose…). Discover ids via `find_locations` (returns matching `metros`) or `list_filter_options`. |
+| `near` | Radius / "near me": `{ lat, lng, radiusKm }` — jobs within radiusKm of a point. Use a `find_locations` match's `center` as `{lat,lng}`. Covers the ~72% of jobs with geo coordinates. |
 | `countries` | ISO codes (`US`, `GB`, `IN`). Defaults to the user's country if location omitted. |
 | `workModes` | `remote`, `hybrid`, `onsite`. |
 | `remote` | Boolean shortcut for remote-only. |

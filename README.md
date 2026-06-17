@@ -378,7 +378,8 @@ ollama pull qwen3-coder:30b
 
 ### Tools (via the MCP server)
 - **search_jobs** - live search with the board's curated classification (role,
-  level, skills, location, work mode, salary, benefits, company size, …).
+  level, skills, location, work mode, salary, benefits, company size, …). Search by
+  exact city, whole **metro area**, or **radius / "near me"**, not just city name.
 - **get_job** - full job detail + the apply link.
 - **save_job** - save a well-matched job (with a fit note) to your InterviewStack
   application tracker - review and apply later at
