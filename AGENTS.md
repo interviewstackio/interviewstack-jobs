@@ -129,10 +129,21 @@ page) to stay within the daily caps.
 
 When the user asks for this ("find new jobs matching my resume and save the best
 ones every morning"), **set the schedule up FOR them** - don't point at docs:
-capture resume + criteria, pick the jittered time yourself, and install the cron /
-scheduled task on their machine, baking the criteria INTO the scheduled prompt
-(headless runs start fresh) and embedding the key's value (cron doesn't read shell
-profiles). Confirm in plain language where saved jobs appear.
+capture resume + criteria, pick the jittered time yourself, and install the
+schedule on their machine. Confirm in plain language where saved jobs appear.
+
+**Prefer the local open-model setup (free + private).** `examples/cron/open-model/`
+has a standalone `digest.py` that gets job DATA from the MCP and ranks fit with a
+**local model via Ollama** - no hosted-AI key and no per-token bills at run time,
+and the resume/profile never leaves the machine. Drive its installer:
+`INTERVIEWSTACK_MCP_KEY=<key> ./examples/cron/open-model/setup.sh` (checks python3,
+installs Ollama if missing, pulls `qwen3:8b`, writes a jittered schedule), then fill
+in `~/.config/interviewstack-digest/config.json` (profile + canonical search) and
+verify with `digest.py --dry-run`. This is client-neutral: setup can be done from
+any tool (Claude/Codex/Copilot), and the recurring run uses no AI vendor.
+Fallback (`examples/cron/setup-daily-digest.sh`): a cron that runs a hosted AI CLI
+each morning - bake the criteria INTO the scheduled prompt (headless runs start
+fresh) and embed the key's value (cron doesn't read shell profiles).
 
 ### Auto-save the best matches
 `save_job(jobId, fitReason)` puts a job in the user's application tracker

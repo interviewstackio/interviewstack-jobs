@@ -49,13 +49,37 @@ morning" (or anything like it), you do all of the setup conversationally:
 2. Ask for a rough time window ("around breakfast?" → 06:00-09:00) - then pick a
    **random hour in the window and a random minute 0-59** yourself (jitter rules
    below).
-3. Install the schedule yourself on their machine. On macOS/Linux with cron
-   (`claude` CLI on PATH, `INTERVIEWSTACK_MCP_KEY` in the environment):
+3. Install the schedule yourself on their machine. **Prefer the local open-model
+   path (Option A) - it's free, private, and needs no AI vendor at run time.**
+
+   **Option A — local open model (RECOMMENDED).** A small standalone script runs
+   each morning and ranks fit with a local model via Ollama; no hosted-AI key, no
+   per-token bills, the resume/profile never leaves the machine. Drive the repo's
+   installer for the user (clone/copy `examples/cron/open-model/` from
+   https://github.com/interviewstackio/interviewstack-jobs):
+
+   ```bash
+   INTERVIEWSTACK_MCP_KEY=<their key> WINDOW_START=6 WINDOW_END=9 \
+     ./examples/cron/open-model/setup.sh
+   ```
+
+   It checks `python3`, **installs Ollama if missing** (ask first) and pulls the
+   model (`qwen3:8b` default), scaffolds `~/.config/interviewstack-digest/`, stores
+   the key in `env` (chmod 600), and installs a **jittered** launchd/cron entry.
+   Then YOU fill in `~/.config/interviewstack-digest/config.json` for them:
+   `candidateProfile` (one specific paragraph incl. a `Not a fit:` clause) and the
+   `search` criteria resolved to canonical values (use `find_roles` etc.). Verify
+   with `python3 ~/.config/interviewstack-digest/digest.py --dry-run` before leaving.
+   If the user has no GPU/limited RAM, suggest a lighter model (`llama3.1:8b`).
+
+   **Option B — hosted AI each morning (fallback).** If the user would rather spend
+   a hosted-AI call per run (no local model), install a cron that runs their AI CLI
+   headlessly with this skill. On macOS/Linux with cron (`claude` CLI on PATH):
 
    ```bash
    ( crontab -l 2>/dev/null | grep -v 'interviewstack-digest'; \
      echo '# interviewstack-digest'; \
-     echo "<MIN> <HOUR> * * * INTERVIEWSTACK_MCP_KEY='$INTERVIEWSTACK_MCP_KEY' claude -p \"<the digest prompt - see below>\" >> $HOME/.interviewstack-digest.log 2>&1" ) | crontab -
+     echo "<MIN> <HOUR> * * * INTERVIEWSTACK_MCP_KEY='$INTERVIEWSTACK_MCP_KEY' claude -p \"<digest prompt>\" >> $HOME/.interviewstack-digest.log 2>&1" ) | crontab -
    ```
 
    Embed the key's VALUE (cron doesn't read shell profiles) and bake the user's
@@ -65,7 +89,8 @@ morning" (or anything like it), you do all of the setup conversationally:
    fits to my InterviewStack tracker with concrete fit reasons, and end with the
    my-applications link."*
    On platforms without cron, use that platform's scheduler (Task Scheduler,
-   launchd, /loop) with the same jittered timing.
+   launchd, /loop) with the same jittered timing. (Codex/Copilot/etc.: swap
+   `claude -p` for that tool's headless run command.)
 4. Close the loop in plain language: "Done - every morning around 7:23 I'll check
    for new matching jobs and save the best ones with a note on why they fit. Review
    and apply at https://app.interviewstack.io/sidenav/my-applications. Jobs you

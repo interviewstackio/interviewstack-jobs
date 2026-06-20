@@ -239,13 +239,29 @@ one-line "why it fits" note) into your
 writes a compact digest to a log. You review and apply from the tracker - jobs you
 remove are never re-saved.
 
+The easiest way: **just ask your assistant** - *"set up my daily job digest to run
+on a local open model."* It will run the installer, set up Ollama, and schedule it.
+Or do it yourself:
+
+### Recommended - free + private, on a local open model
+
+The recurring run uses a **local open model** (via [Ollama](https://ollama.com)) -
+no hosted-AI key, no per-token bills, and your resume/profile never leaves your
+machine. After setup, each morning is just `python3 digest.py`.
+
 ```bash
-# Picks a RANDOM time inside your window (see note below) and installs a cron entry.
-WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
+# Installs Ollama if needed, pulls the model, and writes a JITTERED schedule.
+INTERVIEWSTACK_MCP_KEY=isk_... WINDOW_START=6 WINDOW_END=9 \
+  ./examples/cron/open-model/setup.sh
 ```
 
-**Put your criteria in the prompt.** Each headless run starts fresh, so tell it what
-you want explicitly:
+Then edit `~/.config/interviewstack-digest/config.json` (your profile + search
+criteria) and test with `python3 ~/.config/interviewstack-digest/digest.py --dry-run`.
+Full guide: [`examples/cron/open-model/`](examples/cron/open-model/).
+
+### Alternative - hosted AI each morning
+
+Prefer to spend a hosted-AI call per run instead of running a local model?
 
 ```bash
 DIGEST_PROMPT="Run my daily job digest: new senior ML engineer roles, remote, US, \
@@ -254,13 +270,13 @@ to my tracker with concrete fit reasons." \
 WINDOW_START=6 WINDOW_END=9 ./examples/cron/setup-daily-digest.sh
 ```
 
+This template runs Claude Code headlessly; on another tool (Codex, Copilot, ...),
+schedule that tool's equivalent headless command with the same jittered timing.
+
 > **⏰ Always jitter the schedule.** Don't run it at 09:00 sharp. If everyone runs
 > on the hour, the shared job database takes a synchronized hit and gets slow for
-> everyone. The setup script randomizes the time for you; if you schedule manually,
+> everyone. Both setup scripts randomize the time for you; if you schedule manually,
 > pick a random minute (e.g. `07:23`, not `08:00`). The digest isn't time-critical.
-
-The cron template runs Claude Code headlessly; on another tool, schedule that tool's
-equivalent headless/agent command with the same jittered timing.
 
 ---
 

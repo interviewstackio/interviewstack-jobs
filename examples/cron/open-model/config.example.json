@@ -1,0 +1,27 @@
+{
+  "_comment": "Copy to ~/.config/interviewstack-digest/config.json and edit. NO secrets here - the MCP key goes in the sibling 'env' file (chmod 600).",
+
+  "mcpUrl": "https://mcp-job-search.interviewstack-io.workers.dev/mcp",
+  "ollamaUrl": "http://localhost:11434/api/chat",
+  "ollamaModel": "qwen3:8b",
+  "numCtx": 16384,
+
+  "candidateProfile": "REPLACE ME. One paragraph the model uses to judge fit. Include: your current role + years, your CORE strengths (what you actually do, not just tools), the roles/levels you TARGET, location/remote preference, and an explicit 'Not a fit:' clause for domains/levels you do NOT want. The more specific the 'not a fit', the fewer junk saves.",
+
+  "search": {
+    "roles": ["REPLACE - canonical role name, e.g. Machine Learning Engineer"],
+    "levels": ["senior"],
+    "countries": ["US"],
+    "remote": true,
+    "datePosted": "3days",
+    "limit": 20,
+    "sort": "recent"
+  },
+
+  "extraSearches": [],
+
+  "digestSize": 8,
+  "enrichTopN": 10,
+  "saveThreshold": 9,
+  "maxSavesPerRun": 5
+}
