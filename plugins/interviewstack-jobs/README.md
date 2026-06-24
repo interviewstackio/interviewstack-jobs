@@ -27,7 +27,7 @@ tools will fail). Set the variable and restart Claude Code.
 
 | Type | Name | What it does |
 |------|------|--------------|
-| MCP server | `interviewstack-jobs` | search_jobs, get_job, find_roles/skills/locations/companies, list_filter_options |
+| MCP server | `interviewstack-jobs` | search_jobs, get_job, find_roles, find_skills, find_locations, find_companies, list_filter_options, save_job, list_saved_jobs |
 | Skill | `tailor-application` | Find fitting roles → draft tailored applications |
 | Skill | `resume-polish` | Sharpen a resume, optionally targeted at real postings |
 | Skill | `daily-job-digest` | Recurring low-noise digest of new matching roles |

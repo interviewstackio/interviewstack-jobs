@@ -20,6 +20,10 @@ From the `interviewstack-jobs` MCP server:
 - `save_job` - save a genuinely-fitting job (with a required `fitReason`) to the
   user's InterviewStack application tracker at
   https://app.interviewstack.io/sidenav/my-applications.
+- `list_saved_jobs` - read the user's OWN application tracker back (newest first,
+  with each job's status and your saved note). Works across every connected device
+  and surface - a job saved on the user's laptop shows up when they ask on their
+  phone. Optional `status` filter; pages with `nextCursor`.
 
 ## Golden rule: lead with the curated taxonomy, not free-text
 
@@ -156,6 +160,14 @@ keyword-matched junk that makes the user distrust the whole feature. Skip outcom
 user removed it - never re-save), `skipped_hidden`, `job_gone` - don't retry any
 of them. A 429 "daily save limit" means stop saving for the day. End digests/
 shortlists with the tracker link so the user knows where their saves went.
+
+### Review saved jobs (any device)
+`list_saved_jobs` reads the user's tracker back, so a save made on one device is
+visible from any other connected surface (save on a laptop, review on a phone). Use
+it to answer "what jobs did I save / where am I in the pipeline", to filter by
+`status` (e.g. `SAVED` vs `APPLIED`), and - in a digest - to **de-dupe against what
+the user has already saved** rather than only the previous run's local id list. It
+returns the user's OWN tracker only, never the job corpus.
 
 ## Hard rules (all workflows)
 - **Never fabricate** experience, skills, education, or metrics. Tailoring =

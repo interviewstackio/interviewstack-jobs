@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- New tool **`list_saved_jobs`**: read the user's own application tracker back from
+  any connected device/surface (save on a laptop, review on a phone), newest-first
+  with status + saved note, optional `status` filter, cursor-paged. Documented in
+  `AGENTS.md` (tools list + "Review saved jobs" workflow) and the READMEs.
+
 ## v0.1.0
 
 Initial public release.

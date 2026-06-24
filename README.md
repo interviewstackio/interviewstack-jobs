@@ -400,6 +400,9 @@ ollama pull qwen3-coder:30b
 - **save_job** - save a well-matched job (with a fit note) to your InterviewStack
   application tracker - review and apply later at
   [app.interviewstack.io/sidenav/my-applications](https://app.interviewstack.io/sidenav/my-applications).
+- **list_saved_jobs** - read your tracker back from any connected device (save on
+  your laptop, review on your phone): newest first, with each job's status and your
+  saved note. Optional `status` filter.
 - **find_roles / find_skills / find_locations / find_companies / list_filter_options**
  - resolve what you want to the board's canonical taxonomy (more accurate than
   free-text title matching).

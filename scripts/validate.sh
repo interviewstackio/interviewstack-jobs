@@ -54,5 +54,28 @@ for sk in skills/*/SKILL.md plugins/*/skills/*/SKILL.md; do
 done
 [ "$found_skill" = 1 ] || err "no SKILL.md files found"
 
+echo "== tool-list consistency =="
+# This repo can't see the MCP server source (it's the public mirror), so we can't
+# verify against what's actually served. What we CAN enforce: the docs in THIS repo
+# agree with each other. AGENTS.md "## The tools" is the in-repo anchor; every tool
+# it names must also appear in the user-facing READMEs. Catches a tool added to one
+# doc but not the others. (Server-vs-docs sync is gated in the monorepo's check:docs.)
+ANCHOR=AGENTS.md
+if [ ! -f "$ANCHOR" ]; then err "missing $ANCHOR (tool-list anchor)"; else
+  # Snake_case backticked tokens inside the "## The tools" section (all tool names
+  # have an underscore), de-duped.
+  tools=$(awk '/^## The tools/{f=1;next} /^## /{f=0} f' "$ANCHOR" \
+    | grep -oE '`[a-z]+_[a-z_]+`' | tr -d '`' | sort -u)
+  [ -n "$tools" ] && ok "anchor lists: $(echo "$tools" | tr '\n' ' ')" \
+    || err "no tools parsed from $ANCHOR '## The tools' section"
+  for doc in README.md plugins/interviewstack-jobs/README.md; do
+    [ -f "$doc" ] || { err "missing $doc"; continue; }
+    miss=""
+    for t in $tools; do grep -qF "$t" "$doc" || miss="$miss $t"; done
+    [ -z "$miss" ] && ok "$doc lists every anchored tool" \
+      || err "$doc missing tool(s):$miss"
+  done
+fi
+
 echo
 if [ "$fail" = 0 ]; then echo "ALL CHECKS PASSED"; else echo "VALIDATION FAILED"; exit 1; fi
