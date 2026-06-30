@@ -124,7 +124,10 @@ Details each piece relies on:
    A digest should pull **one modest page** (e.g. `limit:10-20`), not paginate
    deeply - leave the user headroom for interactive searches the same day.
    If a run is throttled (HTTP 429 `jobs_daily`/`daily`), **stop and report it
-   gently** ("you've hit today's limit"); do NOT hammer retries.
+   gently**: this is a usage limit on the account that resets at UTC midnight, NOT
+   a broken server. Tell the user plainly ("you've hit today's job-search limit, it
+   resets at midnight UTC") and point them to their remaining quota at
+   https://app.interviewstack.io/sidenav/job-search-mcp. Do NOT hammer retries.
 4. **De-dupe against the last run.** Track the job ids (or the newest `datePosted`)
    you reported last time, and only surface genuinely new postings. An empty digest
    ("nothing new today") is a fine, honest result - don't pad it.
@@ -155,7 +158,9 @@ Details each piece relies on:
      user removed it before - never re-save), `skipped_hidden`, and `job_gone` are
      all final for that job: don't retry, don't re-recommend.
    - **Respect the save cap.** If you get a 429 "daily save limit", stop saving for
-     the day (the digest text still goes out).
+     the day (the digest text still goes out). It's a usage limit that resets at UTC
+     midnight, not an error; if the user asks, point them to
+     https://app.interviewstack.io/sidenav/job-search-mcp to see their quota.
 
 ## Output (the digest)
 Keep it skimmable - one compact line per role:

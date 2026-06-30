@@ -158,8 +158,11 @@ only, concrete reason every time (never "good fit"), never bulk-save a results p
 on it, not on the search summary's tag array - saving off tags alone produces
 keyword-matched junk that makes the user distrust the whole feature. Skip outcomes are final: `already_saved`, `skipped_previously_saved` (the
 user removed it - never re-save), `skipped_hidden`, `job_gone` - don't retry any
-of them. A 429 "daily save limit" means stop saving for the day. End digests/
-shortlists with the tracker link so the user knows where their saves went.
+of them. A 429 "daily save limit" means stop saving for the day: it's a usage
+limit on the account that resets at UTC midnight, not a failure, so tell the user
+plainly and point them to their remaining quota at
+https://app.interviewstack.io/sidenav/job-search-mcp. End digests/shortlists with
+the tracker link so the user knows where their saves went.
 
 ### Review saved jobs (any device)
 `list_saved_jobs` reads the user's tracker back, so a save made on one device is
