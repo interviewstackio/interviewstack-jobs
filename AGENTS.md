@@ -13,17 +13,53 @@ into your own `AGENTS.md` / rules file.
 
 From the `interviewstack-jobs` MCP server:
 - `search_jobs` - live job search with the board's curated classification.
-- `get_job` - full detail + apply link for one job.
+- `get_job` - full detail + apply link for one job (Pro; free accounts get a
+  teaser, see "Free vs Pro results" below).
 - `find_roles` / `find_skills` / `find_locations` / `find_companies` - resolve the
-  user's intent to the board's **canonical** taxonomy.
+  user's intent to the board's **canonical** taxonomy (`find_companies` is Pro).
 - `list_filter_options` - valid values for the enumerable filters.
 - `save_job` - save a genuinely-fitting job (with a required `fitReason`) to the
   user's InterviewStack application tracker at
-  https://app.interviewstack.io/sidenav/my-applications.
+  https://app.interviewstack.io/sidenav/my-applications (Pro).
 - `list_saved_jobs` - read the user's OWN application tracker back (newest first,
   with each job's status and your saved note). Works across every connected device
   and surface - a job saved on the user's laptop shows up when they ask on their
   phone. Optional `status` filter; pages with `nextCursor`.
+
+## Free vs Pro results
+
+Everyone signed in gets a free key. What the tools return depends on the account's
+plan:
+
+- **Pro:** full results. Company names, full descriptions, apply links,
+  `find_companies`, the `companies` filter, and `save_job`.
+- **Free: teaser results.** `search_jobs` and `get_job` still return the role, level,
+  location, work mode, salary, skills, job type and posting age, but every job comes
+  back with `company: ""` and `locked: true`, the company name is removed from the
+  title, and `get_job` has no `description`, `applyUrl` or `companyWebsite`. The
+  response itself carries `locked: true`, an `upgradeUrl` and a `note`. The
+  `companies` filter is ignored, `find_companies` returns an empty locked list, and
+  `save_job` returns the outcome `pro_required`.
+
+When a response is locked:
+1. **Tell the user** these are teaser results and that InterviewStack Pro unlocks
+   company names, full descriptions, apply links and saving to the tracker. Share
+   the `upgradeUrl` from the response once per conversation or digest, not on every
+   job.
+2. **Still help with what is visible.** Rank on role, level, location, salary and
+   skills, and say the fit call is provisional because the description is hidden.
+   **Never guess or invent** the company, the description or an apply link, and
+   don't try to work out the employer from other fields.
+3. **Skip the description pass.** A locked `get_job` has no description, so fetching
+   it only spends the daily cap.
+4. **`pro_required` is final.** It is a plan limit, not an error and not a quota
+   throttle. Don't retry it and don't try saving other jobs in the same run; tell the
+   user once and share the link.
+
+Also: the board covers its **active** roles only. `find_roles` returns
+`supported: false` for anything else, and `search_jobs` ignores role names it
+doesn't support and says so in `note`. When that happens, tell the user instead of
+presenting the results as matches for that role.
 
 ## Golden rule: lead with the curated taxonomy, not free-text
 
@@ -75,7 +111,7 @@ locations, companies) - the sets below are current but can shift.
 | `locations` | City NAME text (matches EVERY city with that name). Resolve with `find_locations`. For one exact city use `geonameIds`; for a whole metro use `metros`; for a country use `countries`. |
 | `geonameIds` | Exact-city match by GeoNames id (`[5128581]`). Disambiguates same-named cities (the two Springfields). Get ids from `find_locations` (each match returns a `geonameId`). More precise than `locations`. |
 | `metros` | Whole metro area by id (`sf_bay`, `nyc`, `london`, `bengaluru`) → expands to all member cities (SF + Oakland + San Jose…). Discover ids via `find_locations` (returns matching `metros`) or `list_filter_options`. |
-| `near` | Radius / "near me": `{ lat, lng, radiusKm }` — jobs within radiusKm of a point. Use a `find_locations` match's `center` as `{lat,lng}`. Covers the ~72% of jobs with geo coordinates. |
+| `near` | Radius / "near me": `{ lat, lng, radiusKm }` - jobs within radiusKm of a point. Use a `find_locations` match's `center` as `{lat,lng}`. Covers the ~72% of jobs with geo coordinates. |
 | `countries` | ISO codes (`US`, `GB`, `IN`). Defaults to the user's country if location omitted. |
 | `workModes` | `remote`, `hybrid`, `onsite`. |
 | `remote` | Boolean shortcut for remote-only. |
@@ -114,12 +150,18 @@ call `list_filter_options` / `find_*`.
    the **apply link**.
 4. The user reviews and submits. **You never auto-apply.**
 
+On a free account (`locked: true`) there is no description or apply link: shortlist
+on the visible fields, say the fit is provisional, draft resume bullets toward the
+role and level rather than a specific posting, and point the user to the
+`upgradeUrl` for the company, full posting and apply link.
+
 ### Polish a resume
 Pull 5-10 real postings for the target role (`find_roles` → `search_jobs` →
 `get_job` on the closest), extract the recurring skills/seniority language/
 responsibilities, and rewrite the resume toward that **observed demand** - impact
 over duties, mirror real language, calibrate to level, surface gaps honestly. Never
-fabricate.
+fabricate. On a free account the descriptions are locked, so work from the role,
+level and skills tags of the teaser results and say that's what you used.
 
 ### Daily digest
 Each run: search what's **new** (`datePosted: "3days"` - jobs are ingested up to
@@ -149,6 +191,11 @@ Fallback (`examples/cron/setup-daily-digest.sh`): a cron that runs a hosted AI C
 each morning - bake the criteria INTO the scheduled prompt (headless runs start
 fresh) and embed the key's value (cron doesn't read shell profiles).
 
+On a free account the digest still runs, but as a **teaser digest**: role, level,
+location, salary and skills for each new job, no company and no saves. Say so at
+the top of the digest and include the `upgradeUrl`. Don't call `get_job` or
+`save_job` on locked results.
+
 ### Auto-save the best matches
 `save_job(jobId, fitReason)` puts a job in the user's application tracker
 (https://app.interviewstack.io/sidenav/my-applications) with your `fitReason` shown
@@ -158,7 +205,9 @@ only, concrete reason every time (never "good fit"), never bulk-save a results p
 on it, not on the search summary's tag array - saving off tags alone produces
 keyword-matched junk that makes the user distrust the whole feature. Skip outcomes are final: `already_saved`, `skipped_previously_saved` (the
 user removed it - never re-save), `skipped_hidden`, `job_gone` - don't retry any
-of them. A 429 "daily save limit" means stop saving for the day: it's a usage
+of them. `pro_required` means the account isn't on Pro: nothing was saved, stop
+saving for this run, tell the user once and share the upgrade link from the message
+(it is a normal result, not an error, so never retry it). A 429 "daily save limit" means stop saving for the day: it's a usage
 limit on the account that resets at UTC midnight, not a failure, so tell the user
 plainly and point them to their remaining quota at
 https://app.interviewstack.io/sidenav/job-search-mcp. End digests/shortlists with

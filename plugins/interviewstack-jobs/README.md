@@ -32,5 +32,9 @@ tools will fail). Set the variable and restart Claude Code.
 | Skill | `resume-polish` | Sharpen a resume, optionally targeted at real postings |
 | Skill | `daily-job-digest` | Recurring low-noise digest of new matching roles |
 
+Free keys get teaser results (no company, description or apply link, and no
+saving); InterviewStack Pro unlocks them. See
+[Free vs Pro](../../README.md#free-vs-pro).
+
 See the [repo README](../../README.md) for full setup, the daily-digest cron, and
 non-Claude-Code clients.

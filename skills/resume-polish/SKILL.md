@@ -45,6 +45,10 @@ The board's value is its **curated role taxonomy** - use it instead of guessing.
    for that target. Default location is the user's home country (set on their key);
    pass `countries`/`locations` to target elsewhere.
 3. **`get_job(id)`** on the 2-3 closest matches to read full descriptions.
+   On a free account the results come back with `locked: true` and no
+   description: skip `get_job`, work from the role, level and skills tags across
+   the teaser results, and tell the user once that full postings need
+   InterviewStack Pro (share the `upgradeUrl` from the response).
 4. **Extract the real signal** across those postings: the skills/keywords that
    recur, the seniority language, the responsibilities employers emphasize. THAT
    is what you polish toward - observed demand, not a template.

@@ -17,7 +17,7 @@ Copilot, Windsurf and ~20 other tools read natively.
 
 ## Quick start - one copy-paste, then just talk
 
-1. **Get a key** (free) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp) and click Create key. That page fills your key into the command below automatically and has a **Test connection** button to confirm it works. One active key at a time - delete it from the same page if you need a fresh one.
+1. **Get a key** (free; see [Free vs Pro](#free-vs-pro) for what each plan returns) - sign in at [app.interviewstack.io/sidenav/job-search-mcp](https://app.interviewstack.io/sidenav/job-search-mcp) and click Create key. That page fills your key into the command below automatically and has a **Test connection** button to confirm it works. One active key at a time - delete it from the same page if you need a fresh one.
 2. **Connect Claude Code** - paste this ONE line in your Terminal (your key is embedded, no shell setup, nothing to forget):
    ```bash
    claude mcp add --transport http interviewstack-jobs https://mcp-job-search.interviewstack-io.workers.dev/mcp --header "Authorization: Bearer isk_your_key_here"
@@ -396,10 +396,10 @@ ollama pull qwen3-coder:30b
 - **search_jobs** - live search with the board's curated classification (role,
   level, skills, location, work mode, salary, benefits, company size, …). Search by
   exact city, whole **metro area**, or **radius / "near me"**, not just city name.
-- **get_job** - full job detail + the apply link.
+- **get_job** - full job detail + the apply link (Pro; a teaser on the free plan).
 - **save_job** - save a well-matched job (with a fit note) to your InterviewStack
   application tracker - review and apply later at
-  [app.interviewstack.io/sidenav/my-applications](https://app.interviewstack.io/sidenav/my-applications).
+  [app.interviewstack.io/sidenav/my-applications](https://app.interviewstack.io/sidenav/my-applications) (Pro).
 - **list_saved_jobs** - read your tracker back from any connected device (save on
   your laptop, review on your phone): newest first, with each job's status and your
   saved note. Optional `status` filter.
@@ -432,6 +432,25 @@ the plugin) and as a portable **[`AGENTS.md`](./AGENTS.md)** for every other too
 > you'd rather copy one into your tool's rules.
 
 ---
+
+## Free vs Pro
+
+Every signed-in account gets a free key. What you get back depends on your plan:
+
+| | Free | Pro |
+|---|---|---|
+| Role, level, location, work mode, salary, skills, job type, posting age | Yes | Yes |
+| Company names, full job descriptions, apply links | Hidden (teaser results) | Yes |
+| Filter or look up by company (`companies`, find_companies) | No | Yes |
+| Save to your application tracker (save_job) | No | Yes |
+| Daily limits | Free limits | Higher Pro limits |
+
+On the free plan, results come back marked `locked: true` with an upgrade link, and
+the skills and [`AGENTS.md`](./AGENTS.md) tell your assistant to say so plainly and
+never guess the hidden company or apply link. The daily digest still runs as a
+teaser digest. Upgrade at
+[app.interviewstack.io/user-settings](https://app.interviewstack.io/user-settings?tab=subscriptions&source=mcp);
+the next call returns full results, nothing to reconfigure.
 
 ## Limits & fair use
 

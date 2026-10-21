@@ -15,6 +15,11 @@ Flow per run:
   5. save_job the top genuine fits (capped), each with the model's fitReason
   6. write a Markdown digest and (optionally) post a desktop notification
 
+Free accounts get TEASER results (locked: true: no company, no description, no
+apply link, saving needs Pro). The digest still runs on those: it ranks on the
+visible fields, skips get_job + save_job (they would only spend the daily cap),
+and puts the upgrade link at the top of the digest.
+
 Usage: digest.py [--dry-run]   (--dry-run: no saves, no seen.json update)
 
 Config lives in ~/.config/interviewstack-digest/ :
@@ -28,6 +33,7 @@ import re
 import shutil
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 from datetime import date
 from pathlib import Path
@@ -93,7 +99,13 @@ class McpClient:
         if not notification:
             self._id += 1
             payload["id"] = self._id
-        body, session = http_json(self.url, payload, self._headers())
+        try:
+            body, session = http_json(self.url, payload, self._headers())
+        except urllib.error.HTTPError as e:
+            # Surface HTTP errors (e.g. the documented 429 throttle) as RuntimeError
+            # with the status in the text, so callers can detect "429" in str(e).
+            detail = e.read().decode(errors="replace")[:300] if e.fp else ""
+            raise RuntimeError(f"HTTP {e.code}: {detail}") from None
         if session:
             self.session = session
         if notification or not body.strip():
@@ -238,6 +250,7 @@ def main():
     mcp.connect()
 
     jobs, ids = [], set()
+    locked, upgrade_url = False, None
     for params in [config["search"]] + config.get("extraSearches", []):
         try:
             res = mcp.call_tool("search_jobs", params)
@@ -248,6 +261,9 @@ def main():
                 notify("Job digest", "Daily search limit reached - skipped.")
                 return
             raise
+        if res.get("locked"):
+            locked = True
+            upgrade_url = upgrade_url or res.get("upgradeUrl")
         for j in res.get("jobs", []):
             if j["id"] not in ids:
                 ids.add(j["id"])
@@ -271,10 +287,15 @@ def main():
             new_jobs, key=lambda j: rankings.get(j["id"], {}).get("score", -1), reverse=True
         )[:shortlist_n]
         enriched = []
-        for j in shortlist:
+        # Locked (free) results have no description: skip pass 2 entirely.
+        for j in ([] if locked else shortlist):
             try:
                 full = mcp.call_tool("get_job", {"jobId": j["id"]})
-                desc = strip_html(full.get("description", ""))
+                if full.get("locked"):
+                    locked = True
+                    upgrade_url = upgrade_url or full.get("upgradeUrl")
+                    break
+                desc = strip_html(full.get("description") or "")
                 if desc:
                     enriched.append({**j, "description": desc})
             except RuntimeError:
@@ -290,7 +311,8 @@ def main():
     )[: config["digestSize"]]
 
     saved = []
-    if rankings and not DRY_RUN:
+    pro_note = ""
+    if rankings and not DRY_RUN and not locked:
         for j in ranked:
             if len(saved) >= config["maxSavesPerRun"]:
                 break
@@ -300,22 +322,36 @@ def main():
                     res = mcp.call_tool("save_job", {"jobId": j["id"], "fitReason": r["fitReason"]})
                     if res.get("outcome") == "saved":
                         saved.append(j["id"])
+                    elif res.get("outcome") == "pro_required":
+                        # Plan limit, not an error: every other save would get the
+                        # same answer, so stop and never retry.
+                        pro_note = "\n> Auto-save needs InterviewStack Pro; nothing was saved.\n"
+                        break
                 except RuntimeError as e:
                     if "429" in str(e) or "limit" in str(e).lower():
                         break  # daily save cap - digest still goes out
 
     lines = [f"# Job digest {today} (via InterviewStack.io)", ""]
+    if locked:
+        lines += [
+            "> Free plan: these are teaser results. Company names, full descriptions, apply links",
+            "> and auto-saves need InterviewStack Pro. The ranking below uses the job summary only.",
+            f"> Upgrade: {upgrade_url or 'https://app.interviewstack.io/user-settings?tab=subscriptions&source=mcp'}",
+            "",
+        ]
     for j in ranked:
         r = rankings.get(j["id"], {})
         mark = " **[saved ✓]**" if j["id"] in saved else ""
+        company = j.get("company") or ("company hidden" if j.get("locked") or locked else "company not listed")
         lines.append(
-            f"- **{j.get('title')}** · {j.get('company')} · {j.get('location')} · "
+            f"- **{j.get('title')}** · {company} · {j.get('location')} · "
             f"{j.get('salary') or 'salary not listed'}{mark}"
         )
         if r.get("fitReason"):
             lines.append(f"  - fit {r['score']}/10 - {r['fitReason']}")
     lines += [
         llm_note,
+        pro_note,
         f"\n{len(new_jobs)} new posting(s), {len(saved)} saved to your tracker.",
         f"Review and apply: {TRACKER_URL}",
     ]
@@ -325,7 +361,8 @@ def main():
         seen.update(j["id"] for j in jobs)
         seen_path.write_text(json.dumps(sorted(seen)))
 
-    notify("Job digest", f"{len(new_jobs)} new, {len(saved)} saved. Open {out_path.name}")
+    teaser = " (teaser: upgrade to Pro for full results)" if locked else ""
+    notify("Job digest", f"{len(new_jobs)} new, {len(saved)} saved{teaser}. Open {out_path.name}")
     print(out_path)
 
 

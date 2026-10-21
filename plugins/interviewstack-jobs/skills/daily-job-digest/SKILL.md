@@ -52,7 +52,7 @@ morning" (or anything like it), you do all of the setup conversationally:
 3. Install the schedule yourself on their machine. **Prefer the local open-model
    path (Option A) - it's free, private, and needs no AI vendor at run time.**
 
-   **Option A — local open model (RECOMMENDED).** A small standalone script runs
+   **Option A - local open model (RECOMMENDED).** A small standalone script runs
    each morning and ranks fit with a local model via Ollama; no hosted-AI key, no
    per-token bills, the resume/profile never leaves the machine. Drive the repo's
    installer for the user (clone/copy `examples/cron/open-model/` from
@@ -72,7 +72,7 @@ morning" (or anything like it), you do all of the setup conversationally:
    with `python3 ~/.config/interviewstack-digest/digest.py --dry-run` before leaving.
    If the user has no GPU/limited RAM, suggest a lighter model (`llama3.1:8b`).
 
-   **Option B — hosted AI each morning (fallback).** If the user would rather spend
+   **Option B - hosted AI each morning (fallback).** If the user would rather spend
    a hosted-AI call per run (no local model), install a cron that runs their AI CLI
    headlessly with this skill. On macOS/Linux with cron (`claude` CLI on PATH):
 
@@ -157,15 +157,37 @@ Details each piece relies on:
    - **Respect skip outcomes.** `already_saved`, `skipped_previously_saved` (the
      user removed it before - never re-save), `skipped_hidden`, and `job_gone` are
      all final for that job: don't retry, don't re-recommend.
+   - **`pro_required` means the account isn't on Pro.** Nothing was saved. Stop
+     saving for this run (every other save would get the same answer), don't retry,
+     and say it once in the digest with the upgrade link from the message. It is a
+     plan limit, not an error and not the daily quota.
    - **Respect the save cap.** If you get a 429 "daily save limit", stop saving for
      the day (the digest text still goes out). It's a usage limit that resets at UTC
      midnight, not an error; if the user asks, point them to
      https://app.interviewstack.io/sidenav/job-search-mcp to see their quota.
 
+## Free accounts: teaser results (`locked: true`)
+Free accounts get teaser results. Each job keeps role, level, location, work mode,
+salary, skills, job type and posting age, but has `company: ""`, `locked: true` and
+the company name removed from the title; `get_job` has no description or apply
+link; `save_job` returns `pro_required`. The response carries `locked: true` and an
+`upgradeUrl`. When you see that:
+- **Still send the digest**, as a teaser digest: new jobs ranked on the visible
+  fields, with a line at the top saying company names, full descriptions, apply
+  links and auto-saves need InterviewStack Pro, plus the `upgradeUrl`. Mention it
+  once, not per job.
+- **Skip pass 2 and the saves.** A locked `get_job` has no description to judge on,
+  and saving needs Pro, so those calls only spend the daily cap. Say the ranking is
+  provisional (it is based on the summary, not the posting).
+- **Never guess or invent** the company, the description or an apply link.
+- Keep de-duping as normal. If the user upgrades later, every response comes back
+  unlocked on its own; nothing to reconfigure.
+
 ## Output (the digest)
 Keep it skimmable - one compact line per role:
 - **Title · Company · Location · Salary (or "not listed") · Posted**, plus a one-line
-  "why it fits." Mark the ones you saved (e.g. "✓ saved").
+  "why it fits." Mark the ones you saved (e.g. "✓ saved"). On a locked (free)
+  result, write "company hidden" in place of the company.
 - End with: how many new total, how many you saved, and the tracker link -
   **https://app.interviewstack.io/sidenav/my-applications** - so the user can review
   and apply from there. Then offer to go deeper (`get_job` for full detail + apply

@@ -80,5 +80,6 @@ Saved jobs land in your tracker: **https://app.interviewstack.io/sidenav/my-appl
 ## Notes
 
 - Respects the per-key daily caps (search + save). If throttled (HTTP 429), the run stops gracefully and still writes the digest.
+- **Free vs Pro.** On a Pro account you get the full digest above. On a free account the MCP returns teaser results (`locked: true`: no company, description or apply link, and saving needs Pro), so the digest becomes a teaser digest: it ranks on the job summary, skips `get_job` and `save_job`, marks each job "company hidden", and puts the upgrade link at the top. If a save comes back `pro_required`, it stops saving for that run and never retries. Upgrading needs no config change; the next run is full.
 - Keep the schedule **jittered** - never on-the-hour. `setup.sh` does this for you.
 - Source: InterviewStack.io (the `.io` job board, https://interviewstack.io/job-board).
