@@ -116,7 +116,7 @@ locations, companies) - the sets below are current but can shift.
 | `workModes` | `remote`, `hybrid`, `onsite`. |
 | `remote` | Boolean shortcut for remote-only. |
 | `jobTypes` | `full_time`, `part_time`, `contract`, `internship`, `temporary`, `freelance`, `volunteer`. |
-| `salaryMin` / `salaryMax` | Pay bounds. Many postings have NO salary, so this shrinks results sharply. |
+| `salaryMin` / `salaryMax` | Annual pay bounds in USD (salaries in other currencies are converted before comparing). Many postings have NO salary, so this shrinks results sharply. |
 | `benefits` | Require a perk (apply only when stated): `visa`, `equity`, `stock_options`, `401k`, `health_insurance`, `unlimited_pto`, … |
 | `companies` | Specific employers; resolve with `find_companies`. |
 | `companySize` | `startup`, `small`, `medium`, `large`, `enterprise`. Partial coverage (enterprise-skewed). |
